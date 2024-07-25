@@ -11,7 +11,6 @@ import React from "react";
 import {SignedOut} from "@clerk/nextjs";
 import {Button} from "@/components/ui/button";
 import {sidebarLinks} from "@/constants";
-import {router} from "next/client";
 import {usePathname} from "next/navigation";
 
 const NavContent = () => {
@@ -47,7 +46,7 @@ const MobileNav = () => {
             </SheetTrigger>
             <SheetContent side="left" className="background-light900_dark200 border-light-900 border-none ">
                 <Link href="/" className="flex items-center gap-2">
-                    <Image src="/assets/images/site-logo.svg" width={40} height={40} alt="DevFlow Logo"/>
+                    <Image src="/assets/images/site-logo.svg" width={24} height={24} alt="DevFlow Logo"/>
                     <p className="h2-bold text-dark100_light900 font-spaceGrotesk ">Dev<span
                         className="text-primary-500">OverFlow</span></p>
                 </Link>

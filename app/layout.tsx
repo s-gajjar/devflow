@@ -39,7 +39,7 @@ export default function RootLayout({
             }}>
             <ThemeProvider>
                 <html lang="en">
-                <body className={`${inter.className} ${spaceGrotesk.className}`}>
+                <body className={`${inter.className} `}>
                 {children}
                 </body>
                 </html>
