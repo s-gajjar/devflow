@@ -21,7 +21,7 @@ const questions = [
             picture: "/assets/images/avatar.png"
         },
         upvotes: 10,
-        views: 10,
+        views: 1000000,
         answers: 10,
         createdAt: "2023-03-01T00:00:00.000Z",
     },
@@ -33,10 +33,14 @@ const questions = [
             name: "tailwindcss"
         }],
         author: {
-            _id: "1",
+            _id: "2",
             name: "John Doe",
             picture: "/assets/images/avatar.png"
         },
+        upvotes: 10000,
+        views: 10,
+        answers: 10,
+        createdAt: "2023-03-01T00:00:00.000Z",
     }
 
 ];
