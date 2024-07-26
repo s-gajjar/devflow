@@ -70,7 +70,7 @@ const RightSidebar = () => {
                     {popularTags.map((tag) => {
                         return (
                             <div className="flex items-center justify-between gap-4 ">
-                                <RenderTag _id={tag._id} key={tag._id} name={tag.name} totalQuestions={tag.totalQuestions} showCount={true}/>
+                                <RenderTag _id={tag._id} key={tag._id} name={tag.name} />
 
                             </div>
                         )
