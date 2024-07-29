@@ -19,13 +19,21 @@ import {Input} from "@/components/ui/input"
 import {QuestionSchema} from "@/lib/validations";
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
+import {createQuestion} from "@/lib/actions/question.action";
+import {usePathname, useRouter} from "next/navigation";
 
 const type: any= 'create'
 
-const Question = () => {
+interface QuestionProps {
+    mongoUserId: string;
+}
+
+
+const Question = ({ mongoUserId }: QuestionProps) => {
     const editorRef = useRef(null);
     const [isSubmitting, setisSubmitting] = useState(false);
-
+    const router = useRouter();
+    const pathname = usePathname();
     const form = useForm<z.infer<typeof QuestionSchema>>({
         resolver: zodResolver(QuestionSchema),
         defaultValues: {
@@ -35,16 +43,19 @@ const Question = () => {
         },
     })
 
-    function onSubmit(values: z.infer<typeof QuestionSchema>) {
+    async function onSubmit(values: z.infer<typeof QuestionSchema>) {
         setisSubmitting(true);
-        setTimeout(() => {
-            setisSubmitting(false);
-        }, 2000);
 
         try{
-            //make a async call o your api -> create question
+            await createQuestion({
+                title: values.title,
+                explanation: values.explanation,
+                tags: values.tags,
+                author: JSON.parse(mongoUserId),
+                path: pathname,
+            });
 
-            //navigate to home page
+            router.push("/");
         }catch(e){
             console.log(e)
         }finally{
@@ -114,7 +125,9 @@ const Question = () => {
                                         //@ts-ignore
                                         editorRef.current = editor
                                     }}
+                                    onBlur={field.onBlur}
                                     initialValue=""
+                                    onEditorChange={(content) => field.onChange(content)}
                                     init={{
                                         height: 500,
                                         menubar: false,
