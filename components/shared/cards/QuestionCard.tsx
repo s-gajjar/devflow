@@ -3,7 +3,7 @@
 import Link from "next/link";
 import RenderTag from "../RenderTag";
 import Metric from "../Metric";
-import {formatLargeNumber, getTimeStamp} from "@/lib/utils";
+import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
 
 interface Answer {
     id: string;
@@ -12,17 +12,11 @@ interface Answer {
 }
 
 interface QuestionCardProps {
-    // ... other properties
-    answers?: Answer[];
-    // ... rest of the properties
-}
-
-interface QuestionCardProps {
     _id: string;
     title: string;
     tags: {
         _id: number;
-        name: string
+        name: string;
     }[];
     author: {
         _id: string;
@@ -35,7 +29,6 @@ interface QuestionCardProps {
     createdAt?: Date;
 }
 
-
 const QuestionCard = ({
                           _id,
                           title,
@@ -47,18 +40,18 @@ const QuestionCard = ({
                           createdAt,
                       }: QuestionCardProps) => {
     return (
-        <div className="card-wrapper rounded-[10px] p-9 sm:px-12 ">
+        <div className="card-wrapper rounded-[10px] p-9 sm:px-12">
             <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
                 <div>
                     <Link href={`/questions/${_id}`} className="flex items-center gap-2">
                         <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">{title}</h3>
                     </Link>
                 </div>
-                {/*//Todo: if signed in add edit delete actions*/}
+                {/* //Todo: if signed in add edit delete actions */}
             </div>
             <div className="mt-3.5 flex flex-wrap gap-2">
                 {tags.map((tag) => (
-                    <RenderTag key={tag._id} _id={tag._id} name={tag.name}/>
+                    <RenderTag key={tag._id} _id={tag._id} name={tag.name} />
                 ))}
             </div>
             <div className="flex-between mt-5 w-full flex-wrap gap-3">
@@ -70,14 +63,16 @@ const QuestionCard = ({
                     title={` - asked ${getTimeStamp(createdAt!)}`}
                     href={`/profile/${author._id}`}
                     isAuthor={true}
-                    textStyles="small-medium text-dark400_light700"/>
+                    textStyles="small-medium text-dark400_light700"
+                />
                 <Metric
                     imgUrl="/assets/icons/like.svg"
                     alt="upvotes"
                     value={formatLargeNumber(upvotes!)}
                     label="Votes"
                     title=" Upvotes"
-                    textStyles="small-medium text-dark400_light800"/>
+                    textStyles="small-medium text-dark400_light800"
+                />
 
                 <Metric
                     imgUrl="/assets/icons/message.svg"
@@ -85,17 +80,19 @@ const QuestionCard = ({
                     value={formatLargeNumber(answers?.length!)}
                     label="Messages"
                     title=" Messages"
-                    textStyles="small-medium text-dark400_light800"/>
+                    textStyles="small-medium text-dark400_light800"
+                />
                 <Metric
                     imgUrl="/assets/icons/eye.svg"
                     alt="eye"
                     value={formatLargeNumber(views!)}
                     label="Views"
                     title=" Views"
-                    textStyles="small-medium text-dark400_light800"/>
+                    textStyles="small-medium text-dark400_light800"
+                />
             </div>
         </div>
-    )
+    );
 }
 
-export default QuestionCard
+export default QuestionCard;
