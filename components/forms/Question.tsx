@@ -122,7 +122,7 @@ const Question = ({ mongoUserId }: QuestionProps) => {
                                 <Editor
                                     apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
                                     onInit={(_evt, editor) => {
-                                        //@ts-ignore
+                                        //  @ts-ignore
                                         editorRef.current = editor
                                     }}
                                     onBlur={field.onBlur}
