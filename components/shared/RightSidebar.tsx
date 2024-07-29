@@ -69,13 +69,11 @@ const RightSidebar = () => {
                 <div className="mt-7 flex flex-col gap-4">
                     {popularTags.map((tag) => {
                         return (
-                            <div className="flex items-center justify-between gap-4 ">
-                                <RenderTag _id={tag._id} key={tag._id} name={tag.name} />
-
+                            <div key={tag._id} className="flex items-center justify-between gap-4 ">
+                                <RenderTag _id={tag._id} name={tag.name}/>
                             </div>
                         )
                     })}
-
                 </div>
             </div>
         </section>
