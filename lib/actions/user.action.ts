@@ -1,7 +1,7 @@
 'use server';
 
 import {connectToDatabase} from "../mongoose";
-import {CreateUserParams, DeleteUserParams, UpdateUserParams} from "@/lib/actions/shared.types";
+import {CreateUserParams, DeleteUserParams, GetAllUsersParams, UpdateUserParams} from "@/lib/actions/shared.types";
 import {revalidatePath} from "next/cache";
 import Question from "@/database/question.model";
 import User from "@/database/user.model";
@@ -54,13 +54,13 @@ export async function deleteUser(params: DeleteUserParams) {
         const {clerkId} = params;
         const user = await User.findOneAndDelete({clerkId});
 
-        if(!user){
+        if (!user) {
             throw new Error("User not found");
         }
 
         // const userQuestionIds = await Question.find({ author: user._id }).distinct(_id);
 
-        await Question.deleteMany({ author: user._id });
+        await Question.deleteMany({author: user._id});
 
         const deletedUser = await User.findByIdAndDelete(user._id);
 
@@ -70,5 +70,24 @@ export async function deleteUser(params: DeleteUserParams) {
     } catch (e) {
         console.log(e)
         throw e;
+    }
+}
+
+export async function getAllUsers(params: GetAllUsersParams) {
+    try {
+        connectToDatabase();
+
+        const {page = 1, pageSize = 20, filter, searchQuery} = params;
+
+        const users = await User.find({})
+            .sort({createdAt: -1})
+            .lean();
+
+        console.log("Users fetched:", JSON.stringify(users, null, 2));
+
+        return {users};
+    } catch (e) {
+        console.error("Error in getAllUsers:", e);
+        return {users: [], success: false};
     }
 }
