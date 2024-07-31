@@ -5,41 +5,41 @@ import RenderTag from "@/components/shared/RenderTag";
 const RightSidebar = () => {
     const hotQuestions = [
         {
-            id: 1,
+            id: "1",
             title: "What is the best way to learn web development?",
         },
         {
-            id: 2,
+            id: "2",
             title: "What is the best way to learn web development?",
         },
         {
-            id: 3,
+            id: "3",
             title: "What is the best way to learn web development?",
         },
         {
-            id: 4,
+            id: "4",
             title: "What is the best way to learn web development?",
         },
     ];
 
     const popularTags = [
         {
-            _id: 1,
+            _id: "1",
             name: "javascript",
             totalQuestions: 10,
         },
         {
-            _id: 2,
+            _id: "2",
             name: "react",
             totalQuestions: 20,
         },
         {
-            _id: 3,
+            _id: "3",
             name: "nextjs",
             totalQuestions: 30,
         },
         {
-            _id: 4,
+            _id: "4",
             name: "tailwindcss",
             totalQuestions: 40,
         },

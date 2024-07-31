@@ -1,6 +1,8 @@
 import type {Metadata} from "next";
 import {Inter} from "next/font/google";
 import "./globals.css";
+import "../style/prism.css";
+
 import {ClerkProvider} from "@clerk/nextjs";
 import {ThemeProvider} from "@/context/ThemeProvider";
 import React from "react";

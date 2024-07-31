@@ -70,6 +70,43 @@ export interface CreateQuestionParams {
 export interface GetQuestionByIdParams {
     questionId: string;
 }
+export interface GetQuestion {
+    _id: string;
+    title: string;
+    createdAt: Date;
+    answers: Schema.Types.ObjectId[];
+    explanation: string;
+    views: number;
+    author: {
+        _id: string;
+        clerkId: string;
+        name: string;
+        picture: string;
+    };
+    tags: Array<{
+        _id: string;
+        name: string;
+    }>;
+}
+type QuestionResult = {
+    _id: string;
+    title: string;
+    createdAt: Date;
+    answers: Schema.Types.ObjectId[];
+    views: number;
+    explanation: string;
+    author: {
+        _id: string;
+        clerkId: string;
+        name: string;
+        picture: string;
+    };
+    tags: Array<{
+        _id: string;
+        name: string;
+    }>;
+    // Add other properties as needed
+};
 
 export interface QuestionVoteParams {
     questionId: string;

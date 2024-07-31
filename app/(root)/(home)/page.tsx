@@ -12,7 +12,7 @@ import {getQuestions} from "@/lib/actions/question.action";
 export default async function Home() {
 
     const result = await getQuestions({});
-
+    console.log(result)
     // @ts-ignore
     return (
         <>
@@ -45,8 +45,8 @@ export default async function Home() {
                 {result.questions && result.questions.length > 0 ? (
                     result.questions.map((question) => (
                         <QuestionCard
-                            key={question.id}
-                            _id={question.id}
+                            key={question._id}
+                            _id={question._id}
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
@@ -66,6 +66,5 @@ export default async function Home() {
                 )}
             </div>
         </>
-    )
-        ;
+    );
 }
