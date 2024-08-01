@@ -5,6 +5,9 @@ import {formatLargeNumber} from "@/lib/utils";
 import {downvoteQuestion, upvoteQuestion} from "@/lib/actions/question.action";
 import {usePathname, useRouter} from "next/navigation";
 import {downvoteAnswer, upvoteAnswer} from "@/lib/actions/answer.action";
+import {toggleSaveQuestion} from "@/lib/actions/user.action";
+import {useEffect} from "react";
+import {viewQuestion} from "@/lib/actions/interaction.action";
 
 interface VotesProps {
     type: string;
@@ -29,8 +32,13 @@ const Votes = ({
                }: VotesProps) => {
     const path = usePathname();
     const router = useRouter();
-    const handleSave = async () => {
 
+    const handleSave = async () => {
+        await toggleSaveQuestion({
+            userId,
+            questionId: itemId,
+            path
+        })
     }
 
     const handleVote = async (action: string) => {
@@ -77,6 +85,13 @@ const Votes = ({
         router.refresh();
     }
 
+
+    useEffect(() => {
+        viewQuestion({
+            questionId: itemId,
+            userId: userId
+        })
+    },[itemId, userId, path, router]);
 
     return (
         <div className="flex gap-5">
