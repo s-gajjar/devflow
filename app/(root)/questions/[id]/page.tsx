@@ -12,14 +12,14 @@ import {getUserById} from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
 
-const QuestionPage = async ({params, searchParams}: any) => {
+const QuestionPage = async ({params}: any) => {
     const result = await getQuestionById({questionId: params.id});
     if (!result) {
         return <div>Question not found</div>;
     }
 
     const {userId: clerkId} = auth()
-    let mongoUser;
+    let mongoUser: any;
     if (clerkId) {
         mongoUser = await getUserById({userId: clerkId})
     }
@@ -35,14 +35,14 @@ const QuestionPage = async ({params, searchParams}: any) => {
                     </Link>
                     <div className="flex justify-end">
                         <Votes
-                            type="question"
-                            itemId={JSON.stringify(result._id)}
-                            userId={JSON.stringify(mongoUser._id)}
+                            type="Question"
+                            itemId={result._id.toString()}
+                            userId={mongoUser?._id?.toString()}
                             upvotes={result.upvotes.length}
-                            hasupVoted={result.upvotes.includes(mongoUser._id)}
+                            hasupVoted={result.upvotes.some(id => id.toString() === mongoUser?._id?.toString())}
                             downvotes={result.downvotes.length}
-                            hasdownVoted={result.downvotes.includes(mongoUser._id)}
-                            hasSaved={mongoUser?.saved.includes(result._id)}
+                            hasdownVoted={result.downvotes.some(id => id.toString() === mongoUser?._id?.toString())}
+                            hasSaved={mongoUser?.saved?.some((id: { toString: () => string; }) => id.toString() === result._id.toString())}
                         />
                     </div>
                 </div>
@@ -92,15 +92,16 @@ const QuestionPage = async ({params, searchParams}: any) => {
 
             <AllAnswers
                 questionId={result._id}
-                userId={JSON.stringify(mongoUser._id)}
+                userId={mongoUser._id.toString()} // Ensure this is passed as string
                 totalAnswers={result.answers.length}
             />
 
             <div className="mt-10">
                 <Answer
                     question={result.explanation}
-                    questionId={JSON.stringify(result._id)}
-                    authorId={JSON.stringify(mongoUser._id)}/>
+                    questionId={result._id.toString()} // Ensure this is passed as string
+                    authorId={mongoUser._id.toString()} // Ensure this is passed as string
+                />
             </div>
         </>
 

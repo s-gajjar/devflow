@@ -7,7 +7,7 @@ import {
     CreateQuestionParams,
     GetQuestion,
     GetQuestionByIdParams,
-    GetQuestionsParams,
+    GetQuestionsParams, QuestionVoteParams,
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
@@ -83,10 +83,77 @@ export async function getQuestionById(params: GetQuestionByIdParams): Promise<Ge
             .exec();
 
         if (!question) return null;
+        const serializedQuestion = JSON.parse(JSON.stringify(question));
 
-        return question as GetQuestion;
+
+        return serializedQuestion as GetQuestion;
     } catch (e) {
         console.log(e);
+        throw e;
+    }
+}
+
+export async function upvoteQuestion(params: QuestionVoteParams) {
+    try {
+        connectToDatabase();
+        const { questionId, userId, path, hasupVoted } = params;
+
+        let updateQuery = {};
+
+        if (hasupVoted) {
+            updateQuery = { $pull: { upvotes: userId } };
+        } else {
+            updateQuery = {
+                $pull: { downvotes: userId },
+                $addToSet: { upvotes: userId }
+            };
+        }
+
+        const question = await Question.findByIdAndUpdate(questionId, updateQuery, { new: true });
+
+        if (!question) return null;
+
+        revalidatePath(path);
+
+        // Convert to plain object
+        const plainQuestion = question.toObject();
+
+        return plainQuestion;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+
+export async function downvoteQuestion(params: QuestionVoteParams) {
+    try {
+        connectToDatabase();
+        const { questionId, userId, path, hasdownVoted } = params;
+
+        let updateQuery = {};
+
+        if (hasdownVoted) {
+            updateQuery = { $pull: { downvotes: userId } };
+        } else {
+            updateQuery = {
+                $pull: { upvotes: userId },
+                $addToSet: { downvotes:userId }
+            };
+        }
+
+        const question = await Question.findByIdAndUpdate(questionId, updateQuery, { new: true });
+
+        if (!question) return null;
+
+        revalidatePath(path);
+
+        // Convert to plain object
+        const plainQuestion = question.toObject();
+
+        return plainQuestion;
+    } catch (e) {
+        console.error(e);
         throw e;
     }
 }
