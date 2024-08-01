@@ -37,7 +37,7 @@ const UserCard = async ({
                 <div className="mt-5">
                     {interactedTags.tags.length > 0 ? (
                         interactedTags.tags.map((tag) => (
-                            <div key={tag._id} className="flex items-center gap-2">
+                            <div key={tag.id} className="flex items-center gap-2">
                                 <p className="small-medium text-dark400_light700">{tag.name}</p>
                                 <p className="small-medium text-dark400_light700">{tag.totalQuestions}</p>
                             </div>
