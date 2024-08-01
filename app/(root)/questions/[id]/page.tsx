@@ -82,8 +82,8 @@ const QuestionPage = async ({params, searchParams}: any) => {
             </div>
 
             <AllAnswers
-                questionId={result._id.toString()} // Change this line
-                userId={mongoUser?._id.toString()} // Also change this line and make it optional
+                questionId={result._id}
+                userId={JSON.stringify(mongoUser._id)}
                 totalAnswers={result.answers.length}
             />
 

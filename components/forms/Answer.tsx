@@ -35,12 +35,6 @@ const Answer = ({ question, questionId, authorId} : AnswerProps) => {
 
     const handleCreateAnswer = async (values: z.infer<typeof AnswerSchema>) => {
         setisSubmitting(true);
-        console.log({
-            answer: values.answer,
-            author: JSON.parse(authorId),
-            question: JSON.parse(questionId),
-            path: pathname
-        });
         try {
             const response = await createAnswer({
                 answer: values.answer,

@@ -62,7 +62,7 @@ export async function getAllAnswer(params: GetAnswersParams) {
     try {
         await connectToDatabase();
 
-        const {page, pageSize, sortBy, questionId} = params
+        const {questionId} = params
 
         const answers = await Answer.find({question: questionId})
             .populate("author", "_id clerkId name picture")
