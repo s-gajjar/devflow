@@ -30,7 +30,7 @@ const CommunityPage = async() => {
             </div>
             <section className="mt-12 flex flex-wrap gap-4">
                 {result.users && result.users.length > 0 ? (
-                    result.users.map((user) => (
+                    result.users.map((user: { _id: any; clerkId?: string; picture?: string; name?: string; username?: string; }) => (
                         <UserCard key={user._id!}
                                   user={user}/>
                     ))

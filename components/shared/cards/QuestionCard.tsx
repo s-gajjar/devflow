@@ -8,21 +8,13 @@ import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
 interface Answer {
     id: string;
     content: string;
-    // Add other properties as needed
 }
 
 interface QuestionCardProps {
     _id: string;
     title: string;
-    tags: {
-        _id: number;
-        name: string;
-    }[];
-    author: {
-        _id: string;
-        name: string;
-        picture: string;
-    };
+    tags: { _id: string; name: string }[];
+    author: { _id: string; name: string; picture: string };
     upvotes?: number;
     views?: number;
     answers?: Answer[];
@@ -44,10 +36,11 @@ const QuestionCard = ({
             <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
                 <div>
                     <Link href={`/questions/${_id}`} className="flex items-center gap-2">
-                        <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">{title}</h3>
+                        <h3 className="sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1">
+                            {title}
+                        </h3>
                     </Link>
                 </div>
-                {/* //Todo: if signed in add edit delete actions */}
             </div>
             <div className="mt-3.5 flex flex-wrap gap-2">
                 {tags.map((tag) => (
@@ -73,7 +66,6 @@ const QuestionCard = ({
                     title=" Upvotes"
                     textStyles="small-medium text-dark400_light800"
                 />
-
                 <Metric
                     imgUrl="/assets/icons/message.svg"
                     alt="message"
@@ -93,6 +85,6 @@ const QuestionCard = ({
             </div>
         </div>
     );
-}
+};
 
 export default QuestionCard;
