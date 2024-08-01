@@ -76,6 +76,8 @@ export interface GetQuestion {
     answers: Schema.Types.ObjectId[];
     explanation: string;
     views: number;
+    upvotes: string[]; // Array of user IDs who upvoted
+    downvotes: string[]; // Array of user IDs who downvoted
     author: {
         _id: string;
         clerkId: string;

@@ -7,6 +7,7 @@ import Image from "next/image";
 import {getTimeStamp} from "@/lib/utils";
 import ParseHTML from "@/components/shared/ParseHTML";
 
+
 interface AllAnswersProps {
     questionId: string;
     userId: string;
@@ -15,7 +16,7 @@ interface AllAnswersProps {
     filter?: number;
 }
 
-const AllAnswers = async ({questionId, userId, totalAnswers, page, filter}: AllAnswersProps) => {
+const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter}: AllAnswersProps) => {
 
     const result = await getAllAnswer({
         questionId,
@@ -47,7 +48,7 @@ const AllAnswers = async ({questionId, userId, totalAnswers, page, filter}: AllA
                                     </p>
                                 </Link>
                                 <div className="flex justify-end">
-                                    Voting
+                                    voting
                                 </div>
                             </div>
                         </div>

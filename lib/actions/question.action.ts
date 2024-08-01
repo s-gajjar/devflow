@@ -80,11 +80,11 @@ export async function getQuestionById(params: GetQuestionByIdParams): Promise<Ge
             .populate({ path: 'tags', model: Tag, select: "_id name" })
             .populate({ path: 'author', model: User, select: "_id clerkId name picture" })
             .lean()
-            .exec() as null;
+            .exec();
 
         if (!question) return null;
 
-        return question;
+        return question as GetQuestion;
     } catch (e) {
         console.log(e);
         throw e;
