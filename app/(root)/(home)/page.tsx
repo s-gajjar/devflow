@@ -45,8 +45,8 @@ export default async function Home() {
                 {result.questions && result.questions.length > 0 ? (
                     result.questions.map((question) => (
                         <QuestionCard
-                            key={question.id}
-                            _id={question.id}
+                            key={question._id as string}
+                            _id={question._id as string}
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
