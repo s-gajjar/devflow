@@ -1,6 +1,3 @@
-import LocalSearch from "@/components/shared/search/LocalSearch";
-import Filters from "@/components/shared/Filters";
-import {QuestionFilters} from "@/constants/filters";
 import QuestionCard from "@/components/shared/cards/QuestionCard";
 import {getSavedQuestions} from "@/lib/actions/user.action";
 import {auth} from "@clerk/nextjs/server";

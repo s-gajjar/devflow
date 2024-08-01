@@ -139,7 +139,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         await connectToDatabase();
         console.log("Connected to database");
 
-        const { clerkId, page = 1, pageSize = 20, filter, searchQuery } = params;
+        const { clerkId, page = 1, pageSize = 20, searchQuery } = params;
         console.log("Clerk ID:", clerkId);
 
         // Find the user first
