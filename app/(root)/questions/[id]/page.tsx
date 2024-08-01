@@ -7,14 +7,21 @@ import {formatLargeNumber, getTimeStamp} from "@/lib/utils";
 import ParseHTML from "@/components/shared/ParseHTML";
 import RenderTag from "@/components/shared/RenderTag";
 import Answer from "@/components/forms/Answer";
+import {auth} from "@clerk/nextjs/server";
+import {getUserById} from "@/lib/actions/user.action";
+import AllAnswers from "@/components/shared/AllAnswers";
 
 const QuestionPage = async ({params, searchParams}: any) => {
-
     const result = await getQuestionById({questionId: params.id});
     if (!result) {
         return <div>Question not found</div>;
     }
 
+    const {userId: clerkId} = auth()
+    let mongoUser;
+    if (clerkId) {
+        mongoUser = await getUserById({userId: clerkId})
+    }
     return (
         <>
             <div className="flex-start w-full flex-col">
@@ -73,7 +80,19 @@ const QuestionPage = async ({params, searchParams}: any) => {
                     )
                 )}
             </div>
-            <Answer/>
+
+            <AllAnswers
+                questionId={result._id.toString()} // Change this line
+                userId={mongoUser?._id.toString()} // Also change this line and make it optional
+                totalAnswers={result.answers.length}
+            />
+
+            <div className="mt-10">
+                <Answer
+                    question={result.explanation}
+                    questionId={JSON.stringify(result._id)}
+                    authorId={JSON.stringify(mongoUser._id)}/>
+            </div>
         </>
 
     )

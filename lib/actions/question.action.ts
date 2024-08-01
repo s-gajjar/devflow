@@ -8,7 +8,6 @@ import {
     GetQuestion,
     GetQuestionByIdParams,
     GetQuestionsParams,
-    QuestionResult
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
@@ -81,7 +80,7 @@ export async function getQuestionById(params: GetQuestionByIdParams): Promise<Ge
             .populate({ path: 'tags', model: Tag, select: "_id name" })
             .populate({ path: 'author', model: User, select: "_id clerkId name picture" })
             .lean()
-            .exec() as QuestionResult | null;
+            .exec() as null;
 
         if (!question) return null;
 

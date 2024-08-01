@@ -2,9 +2,8 @@ import { Schema } from "mongoose";
 
 import { IUser } from "@/mongodb";
 
-// collapse(1:159)
 export interface CreateAnswerParams {
-    explanation: string;
+    answer: string;
     author: string; // User ID
     question: string; // Question ID
     path: string;
@@ -88,25 +87,6 @@ export interface GetQuestion {
         name: string;
     }>;
 }
-type QuestionResult = {
-    _id: string;
-    title: string;
-    createdAt: Date;
-    answers: Schema.Types.ObjectId[];
-    views: number;
-    explanation: string;
-    author: {
-        _id: string;
-        clerkId: string;
-        name: string;
-        picture: string;
-    };
-    tags: Array<{
-        _id: string;
-        name: string;
-    }>;
-    // Add other properties as needed
-};
 
 export interface QuestionVoteParams {
     questionId: string;

@@ -4,7 +4,6 @@ import {UserFilters} from "@/constants/filters";
 import NoResult from "@/components/shared/NoResult";
 import {getAllTags} from "@/lib/actions/tag.action";
 import Link from "next/link";
-import Image from "next/image";
 
 const TagsPage = async () => {
     const result = await getAllTags({});

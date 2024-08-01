@@ -10,13 +10,22 @@ import {Editor} from "@tinymce/tinymce-react";
 import {useTheme} from "@/context/ThemeProvider";
 import {Button} from "@/components/ui/button";
 import Image from "next/image";
+import {createAnswer} from "@/lib/actions/answer.action";
+import {usePathname} from "next/navigation";
 
-const Answer = () => {
+interface AnswerProps {
+    question: string;
+    questionId: string;
+    authorId: string;
+}
+
+
+const Answer = ({ question, questionId, authorId} : AnswerProps) => {
 
     const {mode} = useTheme();
     const [isSubmitting, setisSubmitting] = useState(false);
     const editorRef = useRef(null);
-
+    const pathname = usePathname();
     const form = useForm<z.infer<typeof AnswerSchema>>({
         resolver: zodResolver(AnswerSchema),
         defaultValues: {
@@ -24,8 +33,38 @@ const Answer = () => {
         }
     });
 
-    const handleCreateAnswer = (values: z.infer<typeof AnswerSchema>) => {
-        console.log(values)
+    const handleCreateAnswer = async (values: z.infer<typeof AnswerSchema>) => {
+        setisSubmitting(true);
+        console.log({
+            answer: values.answer,
+            author: JSON.parse(authorId),
+            question: JSON.parse(questionId),
+            path: pathname
+        });
+        try {
+            const response = await createAnswer({
+                answer: values.answer,
+                author: JSON.parse(authorId),
+                question: JSON.parse(questionId),
+                path: pathname
+            });
+
+            console.log('Create answer response:', response);
+            // You can now safely use response, as it contains only serializable data
+
+            form.reset();
+
+            if (editorRef.current) {
+                const editor = editorRef.current as any;
+                editor.setContent('');
+            }
+
+        } catch (e) {
+            console.error("Error in handleCreateAnswer:", e);
+            // Add user feedback here, like an error message
+        } finally {
+            setisSubmitting(false);
+        }
     }
 
     return (
@@ -88,7 +127,8 @@ const Answer = () => {
 
                         <div className="flex justify-end">
                             <Button type="submit" className="primary-gradient w-fit !text-light-900"
-                                    disabled={isSubmitting}>
+                                    disabled={isSubmitting}
+                                >
                                 {isSubmitting ? 'Submitting...' : 'Submit Answer'}
                             </Button>
                         </div>
