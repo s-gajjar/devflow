@@ -2,7 +2,7 @@
 
 import {connectToDatabase} from "@/lib/mongoose";
 import Answer from "@/database/answer.model";
-import {CreateAnswerParams, GetAnswersParams} from "@/lib/actions/shared.types";
+import {AnswerVoteParams, CreateAnswerParams, GetAnswersParams} from "@/lib/actions/shared.types";
 import Question from "@/database/question.model";
 import {revalidatePath} from "next/cache";
 
@@ -75,3 +75,66 @@ export async function getAllAnswer(params: GetAnswersParams) {
     }
 }
 
+export async function upvoteAnswer(params: AnswerVoteParams) {
+    try {
+        connectToDatabase();
+        const { answerId, userId, path, hasupVoted } = params;
+
+        let updateQuery = {};
+
+        if (hasupVoted) {
+            updateQuery = { $pull: { upvotes: userId } };
+        } else {
+            updateQuery = {
+                $pull: { downvotes: userId },
+                $addToSet: { upvotes: userId }
+            };
+        }
+
+        const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
+
+        if (!answer) return null;
+
+        revalidatePath(path);
+
+        // Convert to plain object
+        const plainAnswer = answer.toObject();
+
+        return plainAnswer;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+export async function downvoteAnswer(params: AnswerVoteParams) {
+    try {
+        connectToDatabase();
+        const { answerId, userId, path, hasdownVoted } = params;
+
+        let updateQuery = {};
+
+        if (hasdownVoted) {
+            updateQuery = { $pull: { downvotes: userId } };
+        } else {
+            updateQuery = {
+                $pull: { upvotes: userId },
+                $addToSet: { downvotes:userId }
+            };
+        }
+
+        const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
+
+        if (!answer) return null;
+
+        revalidatePath(path);
+
+        // Convert to plain object
+        const plainAnswer = answer.toObject();
+
+        return plainAnswer;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}

@@ -6,9 +6,16 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-export const getTimeStamp = (createdAt: Date): string => {
+export const getTimeStamp = (createdAt: string | Date): string => {
   const now = new Date();
-  const diff = now.getTime() - createdAt.getTime();
+  const createdAtDate = typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
+
+  if (!(createdAtDate instanceof Date) || isNaN(createdAtDate.getTime())) {
+    console.error('Invalid date:', createdAt);
+    return 'Invalid date';
+  }
+
+  const diff = now.getTime() - createdAtDate.getTime();
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);

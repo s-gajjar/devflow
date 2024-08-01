@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {getTimeStamp} from "@/lib/utils";
 import ParseHTML from "@/components/shared/ParseHTML";
+import Votes from "@/components/shared/Votes";
 
 
 interface AllAnswersProps {
@@ -25,7 +26,7 @@ const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter}: All
     return (
         <div className="mt-11">
             <div className='flex items-center justify-between'>
-                <h3 className="primary-text-gradient">{totalAnswers} Answers</h3>
+                <h3 className="primary-text-gradient">{totalAnswers} Answer(s)</h3>
 
                 <Filters filters={AnswerFilters}/>
             </div>
@@ -48,7 +49,15 @@ const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter}: All
                                     </p>
                                 </Link>
                                 <div className="flex justify-end">
-                                    voting
+                                    <Votes
+                                        type="Answer"
+                                        itemId={answer._id.toString()}
+                                        userId={userId.toString()}
+                                        upvotes={answer.upvotes.length}
+                                        hasupVoted={answer.upvotes.includes(userId)}
+                                        downvotes={answer.downvotes.length}
+                                        hasdownVoted={answer.downvotes.includes(userId)}
+                                    />
                                 </div>
                             </div>
                         </div>
