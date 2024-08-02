@@ -38,7 +38,7 @@ export default async function Home() {
                             upvotes={question.upvotes}
                             views={question.views}
                             answers={Array.isArray(question.answers) ? question.answers : undefined}
-                            createdAt={question.createdAt ? new Date(question.createdAt) : undefined}
+                            createdAt={question.createdAt}
                         />
                     ))
                 ) : (

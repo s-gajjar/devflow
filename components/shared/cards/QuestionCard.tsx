@@ -1,24 +1,17 @@
-"use client";
-
 import Link from "next/link";
 import RenderTag from "../RenderTag";
 import Metric from "../Metric";
 import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
 
-interface Answer {
-    id: string;
-    content: string;
-}
-
 interface QuestionCardProps {
     _id: string;
     title: string;
-    tags: { _id: string; name: string }[];
+    tags: Array<{ _id: string; name: string }>;
     author: { _id: string; name: string; picture: string };
-    upvotes?: number[];
-    views?: number;
-    answers?: Answer[];
-    createdAt?: Date;
+    upvotes: number; // Change this to `number` if you're passing a count, not an array
+    views: number;
+    answers: Array<{ _id: string; content: string }>;
+    createdAt: Date;
 }
 
 const QuestionCard = ({
@@ -53,7 +46,7 @@ const QuestionCard = ({
                     alt="author"
                     value={author.name}
                     label="Author"
-                    title={` - asked ${getTimeStamp(createdAt!)}`}
+                    title={` - asked ${getTimeStamp(createdAt)}`}
                     href={`/profile/${author._id}`}
                     isAuthor={true}
                     textStyles="small-medium text-dark400_light700"
@@ -61,7 +54,7 @@ const QuestionCard = ({
                 <Metric
                     imgUrl="/assets/icons/like.svg"
                     alt="upvotes"
-                    value={formatLargeNumber(upvotes?.length)}
+                    value={formatLargeNumber(upvotes)}
                     label="Votes"
                     title=" Upvotes"
                     textStyles="small-medium text-dark400_light800"
@@ -69,7 +62,7 @@ const QuestionCard = ({
                 <Metric
                     imgUrl="/assets/icons/message.svg"
                     alt="message"
-                    value={formatLargeNumber(answers?.length!)}
+                    value={formatLargeNumber(answers.length)}
                     label="Messages"
                     title=" Messages"
                     textStyles="small-medium text-dark400_light800"
@@ -77,7 +70,7 @@ const QuestionCard = ({
                 <Metric
                     imgUrl="/assets/icons/eye.svg"
                     alt="eye"
-                    value={formatLargeNumber(views!)}
+                    value={formatLargeNumber(views)}
                     label="Views"
                     title=" Views"
                     textStyles="small-medium text-dark400_light800"

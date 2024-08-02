@@ -1,16 +1,18 @@
-import {model, models, Schema, Document} from "mongoose";
+import { model, models, Schema, Document } from "mongoose";
 
 export interface IQuestion extends Document {
+    _id: Schema.Types.ObjectId;  // Make sure this matches the data type
     title: string;
     explanation: string;
-    tags: Schema.Types.ObjectId[];
-    author: Schema.Types.ObjectId;
-    upvotes: Schema.Types.ObjectId[];
-    downvotes: Schema.Types.ObjectId[];
+    tags: { _id: Schema.Types.ObjectId; name: string }[]; // Include all necessary fields
+    author: { _id: Schema.Types.ObjectId; name: string; picture: string };
+    upvotes: Schema.Types.ObjectId[]; // If upvotes are an array of IDs
+    downvotes: Schema.Types.ObjectId[]; // If downvotes are an array of IDs
     views: number;
-    answers: Schema.Types.ObjectId[];
+    answers: { _id: Schema.Types.ObjectId; content: string }[];
     createdAt: Date;
 }
+
 
 export const QuestionSchema = new Schema<IQuestion>({
     title: {
@@ -19,12 +21,12 @@ export const QuestionSchema = new Schema<IQuestion>({
     },
     explanation: {
         type: String,
-        required: true
+        required: true,
     },
     tags: [{
         type: Schema.Types.ObjectId,
         ref: "Tag",
-        required: true
+        required: true,
     }],
     views: {
         type: Number,

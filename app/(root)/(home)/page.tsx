@@ -1,26 +1,23 @@
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
-import {HomePageFilters} from "@/constants/filters";
+import { HomePageFilters } from "@/constants/filters";
 import HomeFilters from "@/components/home/HomeFilters";
 import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/shared/cards/QuestionCard";
-import {getQuestions} from "@/lib/actions/question.action";
-
+import { getQuestions } from "@/lib/actions/question.action";
 
 export default async function Home() {
-
     const result = await getQuestions({});
     console.log(result)
-    // @ts-ignore
+
     return (
         <>
             <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
                 <h1 className="h1-bold text-dark100_light900">
                     All Questions
                 </h1>
-
 
                 <Link href="/ask-question" className="flex justify-end max-sm:w-full">
                     <Button className="primary-gradient min-h-[46px] !text-light-900 px-4 py-3">Ask a Question</Button>
@@ -37,7 +34,6 @@ export default async function Home() {
                     filters={HomePageFilters}
                     otherClasses="min-h-[56px]"
                     containerClasses="hidden max-md:flex"/>
-
             </div>
             <HomeFilters/>
 
@@ -52,8 +48,8 @@ export default async function Home() {
                             title={question.title}
                             upvotes={question.upvotes}
                             views={question.views}
-                            answers={Array.isArray(question.answers) ? question.answers : undefined}
-                            createdAt={question.createdAt ? new Date(question.createdAt) : undefined}
+                            answers={Array.isArray(question.answers) ? question.answers : []}
+                            createdAt={question.createdAt ? new Date(question.createdAt) : new Date()}
                         />
                     ))
                 ) : (
