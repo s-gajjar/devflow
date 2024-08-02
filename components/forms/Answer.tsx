@@ -38,8 +38,8 @@ const Answer = ({ question, questionId, authorId} : AnswerProps) => {
         try {
             const response = await createAnswer({
                 answer: values.answer,
-                author: JSON.parse(authorId),
-                question: JSON.parse(questionId),
+                author: authorId, // Directly use authorId without JSON.parse
+                question: questionId, // Directly use questionId without JSON.parse
                 path: pathname
             });
 
@@ -60,6 +60,8 @@ const Answer = ({ question, questionId, authorId} : AnswerProps) => {
             setisSubmitting(false);
         }
     }
+
+
 
     return (
         <>

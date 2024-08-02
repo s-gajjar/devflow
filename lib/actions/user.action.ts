@@ -5,13 +5,14 @@ import {connectToDatabase} from "../mongoose";
 import {
     CreateUserParams,
     DeleteUserParams,
-    GetAllUsersParams, GetSavedQuestionsParams,
+    GetAllUsersParams, GetSavedQuestionsParams, GetUserByIdParams, GetUserStatsParams,
     ToggleSaveQuestionParams,
     UpdateUserParams
 } from "@/lib/actions/shared.types";
 import {revalidatePath} from "next/cache";
 import Question from "@/database/question.model";
 import User from "@/database/user.model";
+import Answer from "@/database/answer.model";
 
 export async function getUserById(params: any) {
     try {
@@ -137,14 +138,11 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
 export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     try {
         await connectToDatabase();
-        console.log("Connected to database");
 
-        const { clerkId, page = 1, pageSize = 20, searchQuery } = params;
-        console.log("Clerk ID:", clerkId);
+        const {clerkId, page = 1, pageSize = 20, searchQuery} = params;
 
         // Find the user first
-        const user = await User.findOne({ clerkId }).select('saved');
-        console.log("User found:", user);
+        const user = await User.findOne({clerkId}).select('saved');
 
         if (!user) {
             throw new Error("User not found");
@@ -152,16 +150,15 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
 
         // Construct the query
         const query: FilterQuery<typeof Question> = {
-            _id: { $in: user.saved.map((id: { toString: () => any; }) => id.toString()) },
-            ...(searchQuery ? { title: { $regex: new RegExp(searchQuery, 'i') } } : {})
+            _id: {$in: user.saved.map((id: { toString: () => any; }) => id.toString())},
+            ...(searchQuery ? {title: {$regex: new RegExp(searchQuery, 'i')}} : {})
         };
-        console.log("Query:", query);
 
         // Fetch saved questions with limited population
         const savedQuestions = await Question.find(query)
-            .populate({ path: 'tags', select: '_id name' })
-            .populate({ path: 'author', select: '_id clerkId name picture' })
-            .sort({ createdAt: -1 })
+            .populate({path: 'tags', select: '_id name'})
+            .populate({path: 'author', select: '_id clerkId name picture'})
+            .sort({createdAt: -1})
             .limit(pageSize)
             .skip((page - 1) * pageSize)
             .lean(); // This returns plain JavaScript objects
@@ -187,12 +184,89 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             answers: question.answers.map((id: { toString: () => any; }) => id.toString()),
         }));
 
-        console.log("Number of saved questions:", formattedQuestions.length);
 
-        return { questions: formattedQuestions, success: true };
+        return {questions: formattedQuestions, success: true};
     } catch (e) {
         console.error("Error in getSavedQuestions:", e);
-        return { questions: [], success: false };
+        return {questions: [], success: false};
     }
 }
 
+export async function getUserInfo(params: GetUserByIdParams) {
+    try {
+        connectToDatabase();
+
+        const {userId} = params;
+
+        const user = await User.findOne({clerkId: userId});
+        if (!user) {
+            return {userInfo: null, success: false};
+        }
+
+        const totalQuestions = await Question.countDocuments({author: user._id});
+
+        const totalAnswers = await Answer.countDocuments({author: user._id});
+
+        return{
+            user,
+            totalQuestions,
+            totalAnswers
+        }
+
+    } catch (e) {
+        console.error("Error in getUserInfo:", e);
+        return {userInfo: null, success: false};
+    }
+}
+
+
+export async function getUserQuestions(params: GetUserStatsParams) {
+    try {
+        connectToDatabase();
+
+        const { userId } = params;
+
+        const totalQuestions = await Question.countDocuments({ author: userId });
+
+        const userQuestions = await Question.find({ author: userId })
+            .sort({ views: -1, updatedAt: -1 })
+            .populate({ path: 'tags', select: '_id name' })
+            .populate({ path: 'author', select: '_id clerkId name picture' });
+
+
+        return {
+            totalQuestions,
+            questions: userQuestions
+        };
+
+    } catch (e) {
+        console.error('Error fetching user questions:', e);
+        throw e;
+    }
+}
+
+
+export async function getUsersAnswers(params: GetUserStatsParams) {
+    try {
+        connectToDatabase();
+
+        const { userId } = params;
+
+        const totalAnswers = await Answer.countDocuments({author: userId});
+
+        const userAnswers = await Answer.find({ author: userId })
+            .sort({ updatedAt: -1 })
+            .populate({ path: 'question', select: '_id title' })
+            .populate({ path: 'author', select: '_id clerkId name picture' });
+
+
+        return {
+            totalAnswers,
+            answers: userAnswers
+        }
+
+    }catch(e){
+        console.log(e)
+        throw e;
+    }
+}

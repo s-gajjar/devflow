@@ -6,7 +6,6 @@ import NoResult from "@/components/shared/NoResult";
 
 export default async function Home() {
     const { userId } = auth();
-    console.log("User ID in Home component:", userId);
 
     if (!userId) {
         redirect('/sign-in');
@@ -15,7 +14,6 @@ export default async function Home() {
     const result = await getSavedQuestions({
         clerkId: userId,
     });
-    console.log("Result from getSavedQuestions:", result);
 
     if (!result.success) {
         console.error("Failed to get saved questions");
@@ -35,7 +33,7 @@ export default async function Home() {
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
-                            upvotes={question.upvotes}
+                            upvotes={question.upvotes.length}
                             views={question.views}
                             answers={Array.isArray(question.answers) ? question.answers : undefined}
                             createdAt={question.createdAt}

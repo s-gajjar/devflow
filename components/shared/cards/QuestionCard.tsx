@@ -6,9 +6,10 @@ import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
 interface QuestionCardProps {
     _id: string;
     title: string;
+    clerkId?: string;
     tags: Array<{ _id: string; name: string }>;
     author: { _id: string; name: string; picture: string };
-    upvotes: number; // Change this to `number` if you're passing a count, not an array
+    upvotes: number[];
     views: number;
     answers: Array<{ _id: string; content: string }>;
     createdAt: Date;
@@ -18,6 +19,7 @@ const QuestionCard = ({
                           _id,
                           title,
                           tags,
+                          clerkId,
                           author,
                           upvotes,
                           views,
@@ -25,7 +27,7 @@ const QuestionCard = ({
                           createdAt,
                       }: QuestionCardProps) => {
     return (
-        <div className="card-wrapper rounded-[10px] p-9 sm:px-12">
+        <div className="card-wrapper mt-10 rounded-[10px] p-3 sm:px-12">
             <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
                 <div>
                     <Link href={`/questions/${_id}`} className="flex items-center gap-2">
@@ -54,7 +56,7 @@ const QuestionCard = ({
                 <Metric
                     imgUrl="/assets/icons/like.svg"
                     alt="upvotes"
-                    value={formatLargeNumber(upvotes)}
+                    value={formatLargeNumber(upvotes.length)}
                     label="Votes"
                     title=" Upvotes"
                     textStyles="small-medium text-dark400_light800"
