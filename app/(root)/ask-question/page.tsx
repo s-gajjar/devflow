@@ -13,7 +13,8 @@ const AskQuestion = async () => {
     const mongoUser = await getUserById({ userId });
 
     // Ensure mongoUser?._id is defined
-    const mongoUserId = mongoUser?._id ? JSON.stringify(mongoUser._id) : "";
+    const mongoUserId = mongoUser?._id ? mongoUser._id.toString() : "";
+
 
     return (
         <div>

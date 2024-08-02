@@ -11,6 +11,7 @@ import {
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
+import mongoose from "mongoose";
 
 
 export async function getQuestions(params: GetQuestionsParams) {
@@ -33,16 +34,16 @@ export async function getQuestions(params: GetQuestionsParams) {
 
 
 export async function createQuestion(params: CreateQuestionParams) {
-
     try {
-        connectToDatabase();
+        await connectToDatabase();
 
-        const {title, explanation, tags, author, path} = params;
+        const { title, explanation, tags, author, path } = params;
+        const authorId = typeof author === 'string' ? new mongoose.Types.ObjectId(author) : author;
 
         const question = await Question.create({
             title,
             explanation,
-            author,
+            author: authorId,
         });
 
         const tagDocuments = [];
@@ -61,8 +62,10 @@ export async function createQuestion(params: CreateQuestionParams) {
         })
 
         revalidatePath(path);
-    } catch (e) {
-        console.log(e)
+        return { success: true, questionId: question._id };
+    } catch (error) {
+        console.error('Error creating question:', error);
+        return { success: false, error };
     }
 }
 
