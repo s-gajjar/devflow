@@ -6,6 +6,11 @@ import Link from "next/link";
 import {auth} from "@clerk/nextjs/server";
 import {Button} from "@/components/ui/button";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {formatJoinDate} from "@/lib/utils";
+import ProfileLink from "@/components/shared/ProfileLink";
+import Stats from "@/components/shared/Stats";
+import QuestionTab from "@/components/shared/QuestionTab";
+import AnswersTab from "@/components/shared/AnswersTab";
 
 const Page = async ({params, searchParams}: URLProps) => {
 
@@ -15,20 +20,29 @@ const Page = async ({params, searchParams}: URLProps) => {
         <>
             <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
                 <div className="flex flex-col items-start gap-4 lg:flex-row">
-                    <Image src={userInfo.user.picture} width={140} height={140} alt="author"
+                    <Image src={userInfo.user?.picture} width={140} height={140} alt="author"
                            className="rounded-full"/>
                     <div className="mt-3">
-                        <h2 className='h2-bold text-dark200_light900'>{userInfo.user.name}</h2>
-                        <p className="paragraph-regular text-dark200_light800">@{userInfo.user.username}</p>
+                        <h2 className='h2-bold text-dark200_light900'>{userInfo.user?.name}</h2>
+                        <p className="paragraph-regular text-dark200_light800">@{userInfo.user?.username}</p>
                         <div className={"mt-5 flex flex-wrap items-center justify-start gap-5"}>
-                            {userInfo.user.location && (
-                                <>location</>
+                            {userInfo.user?.portfolioWebsite && (
+                                <ProfileLink
+                                    imgUrl="/assets/icons/link.svg"
+                                    href={userInfo.user?.portfolioWebsite}
+                                    title="Portfolio"/>
                             )}
-
-                            {userInfo.user.joinedAt.toString()}
+                            {userInfo.user?.location && (
+                                <ProfileLink
+                                    imgUrl="/assets/icons/location.svg"
+                                    title={userInfo.user?.location}/>
+                            )}
+                            <ProfileLink
+                                imgUrl="/assets/icons/calendar.svg"
+                                title={formatJoinDate(userInfo.user?.joinedAt.toString())}/>
                         </div>
                         {userInfo.user.bio && (
-                            <p className="body-regular text-dark500_light700">{userInfo.user.bio}</p>
+                            <p className="body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
                         )}
                     </div>
                 </div>
@@ -36,7 +50,8 @@ const Page = async ({params, searchParams}: URLProps) => {
                     <SignedIn>
                         {clerkId === userInfo.user.clerkId && (
                             <Link href="/profile/edit" className="flex items-center gap-2">
-                                <Button className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3">
+                                <Button
+                                    className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3">
                                     Edit Profile
                                 </Button>
                             </Link>
@@ -44,15 +59,28 @@ const Page = async ({params, searchParams}: URLProps) => {
                     </SignedIn>
                 </div>
             </div>
-            Stats
+            <Stats
+                totalQuestions={userInfo.totalQuestions!}
+                totalAnswers={userInfo.totalAnswers!}/>
+
             <div className="mt-10 flex w-full gap-10">
                 <Tabs defaultValue="account" className="w-[400px]">
                     <TabsList className="background-light800_dark400 min-h-[42px] p-1">
                         <TabsTrigger value="top-posts" className="tab">Top Posts</TabsTrigger>
                         <TabsTrigger value="answers" className="tab">Answers</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="top-posts">Posts</TabsContent>
-                    <TabsContent value="answers">Answers</TabsContent>
+                    <TabsContent value="top-posts">
+                        <QuestionTab
+                            searchParams={searchParams}
+                            userId={userInfo.user._id}
+                            clerkId={userInfo.user.clerkId}/>
+                    </TabsContent>
+                    <TabsContent value="answers" className="">
+                        <AnswersTab
+                            searchParams={searchParams}
+                            userId={userInfo.user._id}
+                            clerkId={userInfo.user.clerkId}/>
+                    </TabsContent>
                 </Tabs>
 
             </div>

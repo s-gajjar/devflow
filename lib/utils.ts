@@ -47,3 +47,25 @@ export const formatLargeNumber = (num: number | undefined): string => {
     return num.toString();
   }
 }
+
+export function formatJoinDate(date: Date | string): string {
+  // Convert string to Date if necessary
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  // Check if the input is a valid Date object
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    throw new Error("Invalid Date object");
+  }
+
+  // Define options for formatting
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+
+  // Format the date using the options
+  return date.toLocaleDateString('en-US', options);
+}

@@ -46,7 +46,7 @@ export default async function Home() {
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
-                            upvotes={question.upvotes}
+                            upvotes={question.upvotes.length}
                             views={question.views}
                             answers={Array.isArray(question.answers) ? question.answers : []}
                             createdAt={question.createdAt ? new Date(question.createdAt) : new Date()}

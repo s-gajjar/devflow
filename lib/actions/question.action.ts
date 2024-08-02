@@ -15,9 +15,7 @@ import {revalidatePath} from "next/cache";
 
 export async function getQuestions(params: GetQuestionsParams) {
     try {
-        console.log("Connecting to database...");
         await connectToDatabase();
-        console.log("Database connected, fetching questions...");
 
         const questions = await Question.find({})
             .populate({path: 'tags', model: Tag})
@@ -25,7 +23,6 @@ export async function getQuestions(params: GetQuestionsParams) {
             .sort({createdAt: -1})
             .lean();
 
-        console.log("Questions fetched:", JSON.stringify(questions, null, 2));
 
         return {questions};
     } catch (e) {

@@ -5,7 +5,7 @@ import {connectToDatabase} from "../mongoose";
 import {
     CreateUserParams,
     DeleteUserParams,
-    GetAllUsersParams, GetSavedQuestionsParams, GetUserByIdParams,
+    GetAllUsersParams, GetSavedQuestionsParams, GetUserByIdParams, GetUserStatsParams,
     ToggleSaveQuestionParams,
     UpdateUserParams
 } from "@/lib/actions/shared.types";
@@ -138,14 +138,11 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
 export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     try {
         await connectToDatabase();
-        console.log("Connected to database");
 
         const {clerkId, page = 1, pageSize = 20, searchQuery} = params;
-        console.log("Clerk ID:", clerkId);
 
         // Find the user first
         const user = await User.findOne({clerkId}).select('saved');
-        console.log("User found:", user);
 
         if (!user) {
             throw new Error("User not found");
@@ -156,7 +153,6 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             _id: {$in: user.saved.map((id: { toString: () => any; }) => id.toString())},
             ...(searchQuery ? {title: {$regex: new RegExp(searchQuery, 'i')}} : {})
         };
-        console.log("Query:", query);
 
         // Fetch saved questions with limited population
         const savedQuestions = await Question.find(query)
@@ -188,7 +184,6 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             answers: question.answers.map((id: { toString: () => any; }) => id.toString()),
         }));
 
-        console.log("Number of saved questions:", formattedQuestions.length);
 
         return {questions: formattedQuestions, success: true};
     } catch (e) {
@@ -221,5 +216,57 @@ export async function getUserInfo(params: GetUserByIdParams) {
     } catch (e) {
         console.error("Error in getUserInfo:", e);
         return {userInfo: null, success: false};
+    }
+}
+
+
+export async function getUserQuestions(params: GetUserStatsParams) {
+    try {
+        connectToDatabase();
+
+        const { userId } = params;
+
+        const totalQuestions = await Question.countDocuments({ author: userId });
+
+        const userQuestions = await Question.find({ author: userId })
+            .sort({ views: -1, updatedAt: -1 })
+            .populate({ path: 'tags', select: '_id name' })
+            .populate({ path: 'author', select: '_id clerkId name picture' });
+
+
+        return {
+            totalQuestions,
+            questions: userQuestions
+        };
+
+    } catch (e) {
+        console.error('Error fetching user questions:', e);
+        throw e;
+    }
+}
+
+
+export async function getUsersAnswers(params: GetUserStatsParams) {
+    try {
+        connectToDatabase();
+
+        const { userId } = params;
+
+        const totalAnswers = await Answer.countDocuments({author: userId});
+
+        const userAnswers = await Answer.find({ author: userId })
+            .sort({ updatedAt: -1 })
+            .populate({ path: 'question', select: '_id title' })
+            .populate({ path: 'author', select: '_id clerkId name picture' });
+
+
+        return {
+            totalAnswers,
+            answers: userAnswers
+        }
+
+    }catch(e){
+        console.log(e)
+        throw e;
     }
 }
