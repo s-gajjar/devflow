@@ -31,6 +31,7 @@ interface QuestionProps {
 
 
 const Question = ({ mongoUserId }: QuestionProps) => {
+
     const {mode} = useTheme();
     const editorRef = useRef(null);
     const [isSubmitting, setisSubmitting] = useState(false);
@@ -45,18 +46,18 @@ const Question = ({ mongoUserId }: QuestionProps) => {
         },
     })
 
-    async function onSubmit(values: z.infer<typeof QuestionSchema>) {
+    const onSubmit = async (values: z.infer<typeof QuestionSchema>) => {
         setisSubmitting(true);
 
         try {
-            // Don't parse mongoUserId here, pass it as is
             const result = await createQuestion({
                 title: values.title,
                 explanation: values.explanation,
                 tags: values.tags,
-                author: mongoUserId, // Pass as string, don't parse
+                author: mongoUserId, // This is now a string
                 path: pathname,
             });
+
 
             if (result.success) {
                 router.push("/");
