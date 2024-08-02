@@ -40,17 +40,19 @@ export default async function Home() {
             <div className="mt-10 flex w-full flex-col gap-6">
                 {result.questions && result.questions.length > 0 ? (
                     result.questions.map((question) => (
-                        <QuestionCard
-                            key={question._id as string}
-                            _id={question._id as string}
-                            tags={question.tags}
-                            author={question.author}
-                            title={question.title}
-                            upvotes={question.upvotes.length}
-                            views={question.views}
-                            answers={Array.isArray(question.answers) ? question.answers : []}
-                            createdAt={question.createdAt ? new Date(question.createdAt) : new Date()}
-                        />
+                        question && question._id ? (
+                            <QuestionCard
+                                key={question._id as string}
+                                _id={question._id as string}
+                                tags={question.tags}
+                                author={question.author}
+                                title={question.title}
+                                upvotes={question.upvotes.length}
+                                views={question.views}
+                                answers={Array.isArray(question.answers) ? question.answers : []}
+                                createdAt={question.createdAt ? new Date(question.createdAt) : new Date()}
+                            />
+                        ) : null
                     ))
                 ) : (
                     <NoResult
@@ -60,6 +62,7 @@ export default async function Home() {
                         linkTitle="Ask a Question"
                     />
                 )}
+
             </div>
         </>
     );

@@ -48,22 +48,28 @@ const Question = ({ mongoUserId }: QuestionProps) => {
     async function onSubmit(values: z.infer<typeof QuestionSchema>) {
         setisSubmitting(true);
 
-        try{
-            await createQuestion({
+        try {
+            // Don't parse mongoUserId here, pass it as is
+            const result = await createQuestion({
                 title: values.title,
                 explanation: values.explanation,
                 tags: values.tags,
-                author: JSON.parse(mongoUserId),
+                author: mongoUserId, // Pass as string, don't parse
                 path: pathname,
             });
 
-            router.push("/");
-        }catch(e){
-            console.log(e)
-        }finally{
+            if (result.success) {
+                router.push("/");
+            } else {
+                console.error('Failed to create question:', result.error);
+                // Show error message to user
+            }
+        } catch (error) {
+            console.error('Error submitting question:', error);
+            // Show error message to user
+        } finally {
             setisSubmitting(false);
         }
-
     }
 
     const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: any) => {

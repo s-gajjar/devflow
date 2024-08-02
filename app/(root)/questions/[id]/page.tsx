@@ -12,25 +12,31 @@ import {getUserById} from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
 
-const QuestionPage = async ({params}: any) => {
-    const result = await getQuestionById({questionId: params.id});
-    if (!result) {
+const QuestionPage = async ({ params }: any) => {
+    const result = await getQuestionById({ questionId: params.id });
+
+    // Handle case where result is null or undefined
+    if (!result || !result._id) {
         return <div>Question not found</div>;
     }
 
-    const {userId: clerkId} = auth()
+    const { userId: clerkId } = auth();
     let mongoUser: any;
+
     if (clerkId) {
-        mongoUser = await getUserById({userId: clerkId})
+        mongoUser = await getUserById({ userId: clerkId });
+        // Ensure mongoUser exists
+        if (!mongoUser || !mongoUser._id) {
+            mongoUser = {};
+        }
     }
+
     return (
         <>
             <div className="flex-start w-full flex-col">
-                <div
-                    className="flex w-full flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
+                <div className="flex w-full flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
                     <Link href={`/profile/${result.author.clerkId}`} className="flex items-center gap-2">
-                        <Image src={result.author.picture} width={22} height={22} alt="author"
-                               className="rounded-full"/>
+                        <Image src={result.author.picture} width={22} height={22} alt="author" className="rounded-full" />
                         <p className="paragraph-semibold text-dark300_light700">{result.author.name}</p>
                     </Link>
                     <div className="flex justify-end">
@@ -74,25 +80,23 @@ const QuestionPage = async ({params}: any) => {
                     title=" Views"
                     textStyles="small-medium text-dark400_light800"
                 />
-
             </div>
-            <ParseHTML data={result.explanation || 'Hello'}/>
+            <ParseHTML data={result.explanation || 'Hello'} />
 
             <div className="my-8 flex flex-wrap gap-4">
                 {result.tags.map((tag) => (
-                        <RenderTag
-                            _id={tag._id}
-                            key={tag._id}
-                            name={tag.name}
-                            showCount={false}
-                        />
-                    )
-                )}
+                    <RenderTag
+                        _id={tag._id}
+                        key={tag._id}
+                        name={tag.name}
+                        showCount={false}
+                    />
+                ))}
             </div>
 
             <AllAnswers
                 questionId={result._id}
-                userId={mongoUser._id.toString()} // Ensure this is passed as string
+                userId={mongoUser?._id?.toString()} // Ensure this is passed as string
                 totalAnswers={result.answers.length}
             />
 
@@ -100,12 +104,11 @@ const QuestionPage = async ({params}: any) => {
                 <Answer
                     question={result.explanation}
                     questionId={result._id.toString()} // Ensure this is passed as string
-                    authorId={mongoUser._id.toString()} // Ensure this is passed as string
+                    authorId={mongoUser?._id?.toString()} // Ensure this is passed as string
                 />
             </div>
         </>
-
     )
 }
 
-export default QuestionPage
+export default QuestionPage;
