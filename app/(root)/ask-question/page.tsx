@@ -12,9 +12,8 @@ const AskQuestion = async () => {
 
     const mongoUser = await getUserById({ userId });
 
-    // Ensure mongoUser?._id is defined
+    // Instead of stringifying, pass the id as a string
     const mongoUserId = mongoUser?._id ? mongoUser._id.toString() : "";
-
 
     return (
         <div>
@@ -25,6 +24,5 @@ const AskQuestion = async () => {
         </div>
     );
 };
-
 
 export default AskQuestion;

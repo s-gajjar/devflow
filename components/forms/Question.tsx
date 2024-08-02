@@ -49,11 +49,12 @@ const Question = ({ mongoUserId }: QuestionProps) => {
         setisSubmitting(true);
 
         try {
+            // Don't parse mongoUserId here, pass it as is
             const result = await createQuestion({
                 title: values.title,
                 explanation: values.explanation,
                 tags: values.tags,
-                author: JSON.parse(mongoUserId),
+                author: mongoUserId, // Pass as string, don't parse
                 path: pathname,
             });
 

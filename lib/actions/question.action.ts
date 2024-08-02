@@ -11,7 +11,7 @@ import {
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
-import mongoose from "mongoose";
+import { Types } from 'mongoose';
 
 
 export async function getQuestions(params: GetQuestionsParams) {
@@ -32,19 +32,21 @@ export async function getQuestions(params: GetQuestionsParams) {
     }
 }
 
-
 export async function createQuestion(params: CreateQuestionParams) {
     try {
         await connectToDatabase();
 
         const { title, explanation, tags, author, path } = params;
-        const authorId = typeof author === 'string' ? new mongoose.Types.ObjectId(author) : author;
+
+        // Convert author to ObjectId if it's a string
+        const authorId = typeof author === 'string' ? new Types.ObjectId(author) : author;
 
         const question = await Question.create({
             title,
             explanation,
             author: authorId,
         });
+
 
         const tagDocuments = [];
 
