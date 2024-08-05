@@ -2,9 +2,11 @@ import Link from "next/link";
 
 import Metric from "@/components/shared/Metric";
 import {formatJoinDate, formatLargeNumber} from "@/lib/utils";
+import {SignedIn} from "@clerk/nextjs";
+import EditDeleteAction from "@/components/shared/EditDeleteButton";
 
 interface Props {
-    clerkId?: string | null;
+    clerkId?: string;
     _id: string;
     question: {
         _id: string;
@@ -28,31 +30,29 @@ const AnswerCard = ({
                         upvotes,
                         createdAt,
                     }: Props) => {
-    // const showActionButtons = clerkId && clerkId === author.clerkId;
 
+    const showActionButton = author.clerkId;
+    console.log(showActionButton)
     return (
         <div className="card-wrapper mt-10 p-2 rounded-[10px] px-11">
-
             <Link
-                href={`/question/${question?._id}/#${_id}`}
-                className=''
-            >
+                href={`/questions/${question?._id}`}
+                className=''>
                 <div className='flex flex-col-reverse items-start justify-between gap-5 sm:flex-row'>
                     <div>
-          <span className='subtle-regular text-dark400_light700 line-clamp-1 flex sm:hidden'>
-            {formatJoinDate(createdAt)}
-          </span>
+                      <span className='subtle-regular text-dark400_light700 line-clamp-1 flex sm:hidden'>
+                        {formatJoinDate(createdAt)}
+                      </span>
                         <h3 className='sm:h3-semibold base-semibold text-dark200_light900 line-clamp-1 flex-1'>
                             {question.title}
                         </h3>
                     </div>
 
-                    {/* <SignedIn> */}
-                    {/*    {showActionButtons && ( */}
-                    {/*        // <EditDeleteAction type='Answer' itemId={JSON.stringify(_id)} /> */}
-                    {/*    )} */}
-                    {/* </SignedIn> */}
-
+                    <SignedIn>
+                        {showActionButton && (
+                            <EditDeleteAction type="Answer" itemId={JSON.stringify(_id)} />
+                        )}
+                    </SignedIn>
                 </div>
 
                 <div className='flex-between mt-6 w-full flex-wrap gap-3'>

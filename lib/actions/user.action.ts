@@ -219,7 +219,6 @@ export async function getUserInfo(params: GetUserByIdParams) {
     }
 }
 
-
 export async function getUserQuestions(params: GetUserStatsParams) {
     try {
         connectToDatabase();
@@ -244,7 +243,6 @@ export async function getUserQuestions(params: GetUserStatsParams) {
         throw e;
     }
 }
-
 
 export async function getUsersAnswers(params: GetUserStatsParams) {
     try {

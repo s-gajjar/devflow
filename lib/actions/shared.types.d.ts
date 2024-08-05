@@ -26,7 +26,7 @@ export interface AnswerVoteParams {
 
 export interface DeleteAnswerParams {
     answerId: string;
-    path: string;
+    path?: string;
 }
 
 export interface SearchParams {

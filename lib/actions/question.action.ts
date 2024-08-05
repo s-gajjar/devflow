@@ -4,7 +4,7 @@ import {connectToDatabase} from "@/lib/mongoose";
 import Question from "@/database/question.model";
 import Tag from "@/database/tag.model";
 import {
-    CreateQuestionParams,
+    CreateQuestionParams, DeleteQuestionParams, EditQuestionParams,
     GetQuestion,
     GetQuestionByIdParams,
     GetQuestionsParams, QuestionVoteParams,
@@ -12,6 +12,8 @@ import {
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
 import { Types } from 'mongoose';
+import Answer from "@/database/answer.model";
+import Interaction from "@/database/interaction.model";
 
 
 export async function getQuestions(params: GetQuestionsParams) {
@@ -33,17 +35,18 @@ export async function getQuestions(params: GetQuestionsParams) {
 }
 
 export async function createQuestion(params: CreateQuestionParams) {
-    console.log('Received params:', JSON.stringify(params, null, 2));
     try {
-        await connectToDatabase();
-        console.log('Connected to database');
-
         const { title, explanation, tags, author, path } = params;
 
-        console.log('Processing author:', author);
-        const authorId = typeof author === 'string' ? new Types.ObjectId(author) : author;
+        let authorId;
+        if (typeof author === 'string' && author.length === 24) {
+            authorId = new Types.ObjectId(author);
+        } else if (author instanceof Types.ObjectId) {
+            authorId = author;
+        } else {
+            throw new Error('Invalid author ID format');
+        }
 
-        console.log('Creating question');
         const question = await Question.create({
             title,
             explanation,
@@ -130,7 +133,6 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
     }
 }
 
-
 export async function downvoteQuestion(params: QuestionVoteParams) {
     try {
         connectToDatabase();
@@ -163,3 +165,43 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     }
 }
 
+export async function deleteQuestion(params: DeleteQuestionParams) {
+    try {
+        connectToDatabase();
+        const {questionId, path} = params;
+
+        await Question.deleteOne({_id: questionId});
+        await Answer.deleteMany({question: questionId});
+        await Interaction.deleteMany({question: questionId});
+        await Tag.updateMany({questions: questionId}, {$pull: {questions: questionId}});
+
+
+        revalidatePath(path);
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+export async function editQuestion(params: EditQuestionParams) {
+    try {
+
+        const {questionId, title, explanation, path} = params;
+
+        const question = await Question.findById(questionId).populate('tags');
+        if (!question) {
+            throw new Error('Question not found');
+        }
+
+        question.title = title;
+        question.explanation = explanation;
+
+        await question.save();
+
+        revalidatePath(path);
+        return {success: true, questionId: questionId};
+    } catch (error) {
+        console.error('Error editing question:', error);
+        return {success: false, error};
+    }
+}

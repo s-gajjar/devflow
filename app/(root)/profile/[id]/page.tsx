@@ -42,7 +42,7 @@ const Page = async ({params, searchParams}: URLProps) => {
                                 title={formatJoinDate(userInfo.user?.joinedAt.toString())}/>
                         </div>
                         {userInfo.user.bio && (
-                            <p className="body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
+                            <p className="mt-9 body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
                         )}
                     </div>
                 </div>
@@ -63,13 +63,13 @@ const Page = async ({params, searchParams}: URLProps) => {
                 totalQuestions={userInfo.totalQuestions!}
                 totalAnswers={userInfo.totalAnswers!}/>
 
-            <div className="mt-10 flex w-full gap-10">
-                <Tabs defaultValue="account" className="w-[400px]">
+            <div className="mt-10 flex w-full flex-col gap-10">
+                <Tabs defaultValue="account" className="w-full">
                     <TabsList className="background-light800_dark400 min-h-[42px] p-1">
                         <TabsTrigger value="top-posts" className="tab">Top Posts</TabsTrigger>
                         <TabsTrigger value="answers" className="tab">Answers</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="top-posts">
+                    <TabsContent value="top-posts" className="">
                         <QuestionTab
                             searchParams={searchParams}
                             userId={userInfo.user._id}
