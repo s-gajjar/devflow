@@ -23,7 +23,6 @@ import {createQuestion, editQuestion} from "@/lib/actions/question.action";
 import {usePathname, useRouter} from "next/navigation";
 import {useTheme} from "@/context/ThemeProvider";
 
-const type: any = 'create'
 
 interface QuestionProps {
     mongoUserId: string;

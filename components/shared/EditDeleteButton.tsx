@@ -4,7 +4,6 @@ import {deleteAnswer} from "@/lib/actions/answer.action";
 import {deleteQuestion} from "@/lib/actions/question.action";
 import Image from "next/image";
 import {usePathname, useRouter} from "next/navigation";
-import {Button} from "@/components/ui/button";
 
 interface Props {
     type: string;
@@ -41,8 +40,8 @@ const EditDeleteAction = ({type, itemId}: Props) => {
                 <Image
                     src="/assets/icons/edit.svg"
                     alt="Edit"
-                    width={14}
-                    height={14}
+                    width={20}
+                    height={20}
                     className="cursor-pointer object-contain"
                     onClick={handleEdit}
                 />
@@ -52,8 +51,8 @@ const EditDeleteAction = ({type, itemId}: Props) => {
             <Image
                 src="/assets/icons/trash.svg"
                 alt="Delete"
-                width={14}
-                height={14}
+                width={20}
+                height={20}
                 className="cursor-pointer object-contain"
                 onClick={handleDelete}
             />

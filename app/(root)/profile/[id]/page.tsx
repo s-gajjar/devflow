@@ -42,7 +42,7 @@ const Page = async ({params, searchParams}: URLProps) => {
                                 title={formatJoinDate(userInfo.user?.joinedAt.toString())}/>
                         </div>
                         {userInfo.user.bio && (
-                            <p className="body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
+                            <p className="mt-9 body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
                         )}
                     </div>
                 </div>

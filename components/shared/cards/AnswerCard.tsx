@@ -3,7 +3,6 @@ import Link from "next/link";
 import Metric from "@/components/shared/Metric";
 import {formatJoinDate, formatLargeNumber} from "@/lib/utils";
 import {SignedIn} from "@clerk/nextjs";
-import EditDeleteButton from "@/components/shared/EditDeleteButton";
 import EditDeleteAction from "@/components/shared/EditDeleteButton";
 
 interface Props {
