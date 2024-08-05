@@ -1,50 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import RenderTag from "@/components/shared/RenderTag";
+import {getHotQuestions} from "@/lib/actions/question.action";
+import {getPopularTags} from "@/lib/actions/tag.action";
 
-const RightSidebar = () => {
-    const hotQuestions = [
-        {
-            id: "1",
-            title: "What is the best way to learn web development?",
-        },
-        {
-            id: "2",
-            title: "What is the best way to learn web development?",
-        },
-        {
-            id: "3",
-            title: "What is the best way to learn web development?",
-        },
-        {
-            id: "4",
-            title: "What is the best way to learn web development?",
-        },
-    ];
+const RightSidebar = async () => {
 
-    const popularTags = [
-        {
-            _id: "1",
-            name: "javascript",
-            totalQuestions: 10,
-        },
-        {
-            _id: "2",
-            name: "react",
-            totalQuestions: 20,
-        },
-        {
-            _id: "3",
-            name: "nextjs",
-            totalQuestions: 30,
-        },
-        {
-            _id: "4",
-            name: "tailwindcss",
-            totalQuestions: 40,
-        },
+    const hotQuestions = await getHotQuestions();
+    const popularTags = await getPopularTags();
 
-    ];
 
     return (
         <section className="background-light900_dark200 light-border sticky right-0 top-0 flex h-screen flex-col  overflow-y-auto
@@ -54,7 +18,7 @@ const RightSidebar = () => {
                 <div className="flex flex-col mt-7 gap-[30px] w-full">
                     {hotQuestions.map((question) => {
                         return (
-                            <Link key={question.id} href={`/questions/${question.id}`}
+                            <Link key={JSON.stringify(question._id)} href={`/questions/${question._id}`}
                                   className="flex items-center justify-between gap-4 ">
                                 <p className="body-medium text-dark500_light700">{question.title}</p>
                                 <Image src="/assets/icons/chevron-right.svg" width={20} height={20}
@@ -67,13 +31,15 @@ const RightSidebar = () => {
             <div className="mt-16">
                 <h3 className="h3-bold text-dark200_light900">Popular Tags</h3>
                 <div className="mt-7 flex flex-col gap-4">
-                    {popularTags.map((tag) => {
-                        return (
-                            <div key={tag._id} className="flex items-center justify-between gap-4 ">
-                                <RenderTag _id={tag._id} name={tag.name}/>
-                            </div>
-                        )
-                    })}
+                    {popularTags.map((tags) => (
+                        <RenderTag
+                            _id={tags._id}
+                            key={tags._id}
+                            name={tags.name}
+                            totalQuestions={1}
+                            showCount={true}
+                        />
+                    ))}
                 </div>
             </div>
         </section>
