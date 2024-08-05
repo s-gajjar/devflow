@@ -13,7 +13,7 @@ const QuestionTab = async({ searchParams, userId, clerkId} : QuestionTabProps) =
 
 
     return (
-        <div>
+        <>
             {result.questions.map((question) => (
                 <QuestionCard
                     key={question._id}
@@ -28,7 +28,7 @@ const QuestionTab = async({ searchParams, userId, clerkId} : QuestionTabProps) =
                     createdAt={question.createdAt}
                 />
             ))}
-        </div>
+        </>
     )
 }
 

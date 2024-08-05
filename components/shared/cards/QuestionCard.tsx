@@ -2,6 +2,8 @@ import Link from "next/link";
 import RenderTag from "../RenderTag";
 import Metric from "../Metric";
 import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
+import {SignedIn} from "@clerk/nextjs";
+import EditDeleteButton from "@/components/shared/EditDeleteButton";
 
 interface QuestionCardProps {
     _id: string;
@@ -26,6 +28,8 @@ const QuestionCard = ({
                           answers,
                           createdAt,
                       }: QuestionCardProps) => {
+    const showActionButton =  clerkId;
+
     return (
         <div className="card-wrapper mt-10 rounded-[10px] p-3 sm:px-12">
             <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
@@ -36,6 +40,15 @@ const QuestionCard = ({
                         </h3>
                     </Link>
                 </div>
+
+                <SignedIn>
+                    {showActionButton && (
+                        <EditDeleteButton
+                            type="Question"
+                            itemId={JSON.stringify(_id)}
+                        />
+                    )}
+                </SignedIn>
             </div>
             <div className="mt-3.5 flex flex-wrap gap-2">
                 {tags.map((tag) => (
