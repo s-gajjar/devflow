@@ -31,7 +31,7 @@ const LocalSearch = ({
     const [search, setSearch] = useState(query || '');
 
     useEffect(() => {
-        const delaydebouncedFn = setTimeout(()=>{
+        setTimeout(()=>{
             if(search){
                 const newUrl = formUrlQuery({
                     params: searchParams.toString(),

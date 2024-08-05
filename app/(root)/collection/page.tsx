@@ -4,11 +4,9 @@ import {auth} from "@clerk/nextjs/server";
 import {redirect} from "next/navigation";
 import NoResult from "@/components/shared/NoResult";
 import {SearchParamsProps} from "@/types";
-import {getQuestions} from "@/lib/actions/question.action";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
-import {HomePageFilters, QuestionFilters} from "@/constants/filters";
-import {Filter} from "lucide-react";
+import {QuestionFilters} from "@/constants/filters";
 
 export default async function Collection({searchParams} : SearchParamsProps) {
 
