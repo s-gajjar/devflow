@@ -5,7 +5,6 @@ import {getAllUsers} from "@/lib/actions/user.action";
 import NoResult from "@/components/shared/NoResult";
 import UserCard from "@/components/shared/cards/UserCard";
 import {SearchParamsProps} from "@/types";
-import {getQuestions} from "@/lib/actions/question.action";
 
 const CommunityPage = async({ searchParams } : SearchParamsProps) => {
 
