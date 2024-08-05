@@ -205,3 +205,20 @@ export async function editQuestion(params: EditQuestionParams) {
         return {success: false, error};
     }
 }
+
+export async function getHotQuestions() {
+    try {
+        connectToDatabase();
+        const questions = await Question.find({})
+            .populate({path: 'tags', model: Tag})
+            .populate({path: 'author', model: User})
+            .sort({upvotes: -1})
+            .limit(5)
+            .lean();
+
+        return questions;
+    } catch (e) {
+        console.error("Error in getHotQuestions:", e);
+        return [];
+    }
+}
