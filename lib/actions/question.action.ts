@@ -37,7 +37,6 @@ export async function getQuestions(params: GetQuestionsParams) {
             .sort({createdAt: -1})
             .lean();
 
-
         return {questions};
     } catch (e) {
         console.error("Error in getQuestions:", e);

@@ -8,6 +8,8 @@ import {
     GetTopInteractedTagsParams
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
+import {FilterQuery} from "mongoose";
+import Question from "@/database/question.model";
 
 interface PopulatedTag extends Document {
     name: string;
@@ -51,8 +53,16 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
     try {
         await connectToDatabase();
+        const {searchQuery} = params;
 
-        const tags = await Tag.find({});
+        const query: FilterQuery<typeof Tag> = {};
+
+        if(searchQuery) {
+            query.$or = [
+                {name: { $regex: new RegExp(searchQuery, "i")}},
+            ]
+        }
+        const tags = await Tag.find(query);
 
         return {tags};
     } catch (e) {
@@ -67,6 +77,15 @@ export async function GetQuestionsByTagId(params: GetQuestionsByTagIdParams) {
 
         const { tagId, page = 1, pageSize = 20, searchQuery } = params;
 
+        const query: FilterQuery<typeof Question> = {};
+
+        if(searchQuery) {
+            query.$or = [
+                {title: { $regex: new RegExp(searchQuery, "i")}},
+                {explanation: { $regex: new RegExp(searchQuery, "i")}}
+
+            ]
+        }
         const tag = await Tag.findOne({ _id: tagId }).populate({
             path: 'questions',
             match: searchQuery ? { title: { $regex: searchQuery, $options: 'i' } } : {},
