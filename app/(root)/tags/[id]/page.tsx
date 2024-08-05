@@ -9,7 +9,7 @@ const Page = async ({params, searchParams}: URLProps) => {
     const result = await GetQuestionsByTagId({
         tagId: params.id,
         page: searchParams.page ? parseInt(searchParams.page) : 1,
-        searchQuery: searchParams.searchQuery,
+        searchQuery: searchParams.q,
     });
 
     // @ts-ignore
@@ -20,7 +20,7 @@ const Page = async ({params, searchParams}: URLProps) => {
             </h1>
             <div className="mt-11 w-full">
                 <LocalSearch
-                    route="/"
+                    route={`/tags/${params.id}`}
                     iconPosition="left"
                     imgSrc="/assets/icons/search.svg"
                     placeholder="Search tag questions"

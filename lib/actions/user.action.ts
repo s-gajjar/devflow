@@ -85,9 +85,20 @@ export async function getAllUsers(params: GetAllUsersParams) {
     try {
         connectToDatabase();
 
+        const {searchQuery} = params;
+
+        const query: FilterQuery<typeof User> = {};
+
+        if(searchQuery) {
+            query.$or = [
+                {name: { $regex: new RegExp(searchQuery, "i")}},
+                {username: { $regex: new RegExp(searchQuery, "i")}},
+            ]
+        }
+
         // const {page = 1, pageSize = 20, filter, searchQuery} = params;
 
-        const users = await User.find({})
+        const users = await User.find(query)
             .sort({createdAt: -1})
             .lean();
 
@@ -148,13 +159,11 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             throw new Error("User not found");
         }
 
-        // Construct the query
         const query: FilterQuery<typeof Question> = {
             _id: {$in: user.saved.map((id: { toString: () => any; }) => id.toString())},
             ...(searchQuery ? {title: {$regex: new RegExp(searchQuery, 'i')}} : {})
         };
 
-        // Fetch saved questions with limited population
         const savedQuestions = await Question.find(query)
             .populate({path: 'tags', select: '_id name'})
             .populate({path: 'author', select: '_id clerkId name picture'})
@@ -163,8 +172,6 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             .skip((page - 1) * pageSize)
             .lean(); // This returns plain JavaScript objects
 
-        // Convert ObjectId to string
-        // @ts-ignore
         const formattedQuestions = savedQuestions.map(question => ({
             ...question,
             _id: question._id,
