@@ -1,6 +1,6 @@
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
-import {TagFilters, UserFilters} from "@/constants/filters";
+import {TagFilters} from "@/constants/filters";
 import NoResult from "@/components/shared/NoResult";
 import {getAllTags} from "@/lib/actions/tag.action";
 import Link from "next/link";

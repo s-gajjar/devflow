@@ -68,7 +68,7 @@ export async function getAllAnswer(params: GetAnswersParams) {
     try {
         await connectToDatabase();
 
-        const {questionId, sortBy, page = 1, pageSize = 10} = params;
+        const {questionId, sortBy} = params;
 
         let sortOptions: any = {};
 
