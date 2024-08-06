@@ -19,9 +19,7 @@ export async function getQuestions(params: GetQuestionsParams) {
     try {
         await connectToDatabase();
 
-        console.log("Received params in getQuestions:", params);
-        const {searchQuery, filter, page = 1, pageSize = 10} = params;
-        console.log("Filter in getQuestions:", filter);
+        const {searchQuery, filter, page = 1, pageSize = 5} = params;
 
         const skipAmount = (page - 1) * pageSize;
         const query: FilterQuery<typeof Question> = {};
@@ -53,9 +51,6 @@ export async function getQuestions(params: GetQuestionsParams) {
             }
         }
 
-        console.log("Query before find:", JSON.stringify(query));
-        console.log("Sort options before find:", JSON.stringify(sortOptions));
-
         const questions = await Question.find(query)
             .populate({path: 'tags', model: Tag})
             .populate({path: 'author', model: User})
@@ -63,12 +58,8 @@ export async function getQuestions(params: GetQuestionsParams) {
             .limit(pageSize)
             .sort(sortOptions)
 
-        console.log("Final query:", JSON.stringify(query));
-        console.log("Sort options:", sortOptions);
-        console.log("Number of questions returned:", questions.length);
 
         const totalQuestions = await Question.countDocuments(query);
-
         const isNext = totalQuestions > skipAmount + questions.length;
 
         return {questions, isNext};

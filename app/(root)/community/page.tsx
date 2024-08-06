@@ -5,6 +5,7 @@ import {getAllUsers} from "@/lib/actions/user.action";
 import NoResult from "@/components/shared/NoResult";
 import UserCard from "@/components/shared/cards/UserCard";
 import {SearchParamsProps} from "@/types";
+import Pagination from "@/components/shared/Pagination";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,7 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
     const result = await getAllUsers({
         searchQuery: searchParams.q,
         filter: searchParams.filter,
+        page: searchParams.page ? +searchParams.page : 1,
     });
 
     return (
@@ -33,11 +35,17 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
                 <Filters
                     filters={UserFilters}
                     otherClasses="min-h-[56px] sm:min-w-[170px]"
-                    />
+                />
             </div>
             <section className="mt-12 flex flex-wrap gap-4">
                 {result.users && result.users.length > 0 ? (
-                    result.users.map((user: { _id: any; clerkId?: string; picture?: string; name?: string; username?: string; }) => (
+                    result.users.map((user: {
+                        _id: any;
+                        clerkId?: string;
+                        picture?: string;
+                        name?: string;
+                        username?: string;
+                    }) => (
                         <UserCard key={user._id!}
                                   user={user}/>
                     ))
@@ -50,7 +58,11 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
                     />
                 )}
             </section>
-
+            <div className="mt-10">
+                <Pagination
+                    pageNumber={searchParams?.page ? +searchParams.page : 1}
+                    isNext={result.isNext!}/>
+            </div>
         </>
     )
 }

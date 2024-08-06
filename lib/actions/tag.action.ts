@@ -24,6 +24,7 @@ interface PopulatedTag extends Document {
         createdAt: Date;
     }>;
 }
+
 export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
     try {
         await connectToDatabase();
@@ -53,7 +54,7 @@ export async function getTopInteractedTags(params: GetTopInteractedTagsParams) {
 export async function getAllTags(params: GetAllTagsParams) {
     try {
         await connectToDatabase();
-        const {searchQuery, filter} = params;
+        const {searchQuery, filter, pageSize = 12, page = 1} = params;
 
         let sortOptions: any = {};
 
@@ -77,15 +78,21 @@ export async function getAllTags(params: GetAllTagsParams) {
         }
 
         const query: FilterQuery<typeof Tag> = {};
+        const skipAmount = (page - 1) * pageSize;
 
-        if(searchQuery) {
+        if (searchQuery) {
             query.$or = [
-                {name: { $regex: new RegExp(searchQuery, "i")}},
+                {name: {$regex: new RegExp(searchQuery, "i")}},
             ]
         }
-        const tags = await Tag.find(query).sort(sortOptions);
+        const tags = await Tag.find(query)
+            .sort(sortOptions)
+            .skip(skipAmount)
+            .limit(pageSize);
 
-        return {tags};
+        const totalTags = await Tag.countDocuments(query);
+        const isNext = totalTags > skipAmount + tags.length;
+        return {tags, isNext};
     } catch (e) {
         console.error("Error in getAllTags:", e);
         return {tags: [], success: false};
@@ -96,26 +103,27 @@ export async function GetQuestionsByTagId(params: GetQuestionsByTagIdParams) {
     try {
         await connectToDatabase();
 
-        const { tagId, page = 1, pageSize = 20, searchQuery } = params;
+        const {tagId, page = 1, pageSize = 5, searchQuery} = params;
 
         const query: FilterQuery<typeof Question> = {};
+        const skipAmount = (page - 1) * pageSize;
 
-        if(searchQuery) {
+        if (searchQuery) {
             query.$or = [
-                {title: { $regex: new RegExp(searchQuery, "i")}},
-                {explanation: { $regex: new RegExp(searchQuery, "i")}}
+                {title: {$regex: new RegExp(searchQuery, "i")}},
+                {explanation: {$regex: new RegExp(searchQuery, "i")}}
 
             ]
         }
-        const tag = await Tag.findOne({ _id: tagId }).populate({
+        const tag = await Tag.findOne({_id: tagId}).populate({
             path: 'questions',
-            match: searchQuery ? { title: { $regex: searchQuery, $options: 'i' } } : {},
-            options: { sort: { createdAt: -1 }, skip: (page - 1) * pageSize, limit: pageSize },
+            match: searchQuery ? {title: {$regex: searchQuery, $options: 'i'}} : {},
+            options: {sort: {createdAt: -1}, skip: skipAmount, limit: pageSize + 1}, // Fetch one extra question
             populate: [
-                { path: 'tags', model: 'Tag', select: '_id name' },
-                { path: 'author', model: 'User', select: '_id name picture' },
-                { path: 'upvotes', model: 'User', select: '_id' },
-                { path: 'answers', model: 'Answer', select: '_id content' },
+                {path: 'tags', model: 'Tag', select: '_id name'},
+                {path: 'author', model: 'User', select: '_id name picture'},
+                {path: 'upvotes', model: 'User', select: '_id'},
+                {path: 'answers', model: 'Answer', select: '_id content'},
             ]
         }).lean() as PopulatedTag | null;
 
@@ -123,25 +131,32 @@ export async function GetQuestionsByTagId(params: GetQuestionsByTagIdParams) {
             throw new Error("Tag not found");
         }
 
-        // Adjust mapping to ensure types match QuestionCardProps
+        const isNext = tag.questions.length > pageSize;
+
+        if (isNext) {
+            tag.questions.pop();
+        }
+
         return {
             tagTitle: tag.name,
+            isNext,
             questions: tag.questions.map((q: any) => ({
                 _id: q._id.toString(),
                 title: q.title,
-                tags: q.tags.map((tag: any) => ({ _id: tag._id.toString(), name: tag.name })),
+                tags: q.tags.map((tag: any) => ({_id: tag._id.toString(), name: tag.name})),
                 author: {
                     _id: q.author._id.toString(),
                     name: q.author.name,
                     picture: q.author.picture,
                 },
-                upvotes: q.upvotes.length, // Adjusted to a number
+                upvotes: q.upvotes.length,
                 views: q.views,
-                answers: q.answers.map((answer: any) => ({ _id: answer._id.toString(), content: answer.content })),
-                createdAt: new Date(q.createdAt), // Ensure this is a Date object
+                answers: q.answers.map((answer: any) => ({_id: answer._id.toString(), content: answer.content})),
+                createdAt: new Date(q.createdAt),
             })),
             success: true
         };
+
     } catch (e) {
         console.log(e);
         throw e;

@@ -5,12 +5,14 @@ import NoResult from "@/components/shared/NoResult";
 import {getAllTags} from "@/lib/actions/tag.action";
 import Link from "next/link";
 import {SearchParamsProps} from "@/types";
+import Pagination from "@/components/shared/Pagination";
 
 const TagsPage = async({ searchParams } : SearchParamsProps) => {
 
     const result = await getAllTags({
         searchQuery: searchParams.q,
         filter: searchParams.filter,
+        page: searchParams.page ? +searchParams.page : 1,
     });
 
     return (
@@ -37,7 +39,8 @@ const TagsPage = async({ searchParams } : SearchParamsProps) => {
                     result.tags.map((tag) => (
                         <Link href={`/tags/${tag._id}`} key={tag._id}
                               className="shadow-light100_darknone w-full max-xs:min-w-full xs:w-[260px]">
-                            <article className="background-light900_dark200 light-border flex w-full flex-col rounded-2xl border-px-8 py-10 sm:w-[260px] p-8">
+                            <article
+                                className="background-light900_dark200 light-border flex w-full flex-col rounded-2xl border-px-8 py-10 sm:w-[260px] p-8">
                                 <div className="background-light800_dark400 w-fit rounded-sm px-5 py-1.5">
                                     <p className="paragraph-semibold text-dark300_light900">
                                         {tag.name}
@@ -45,7 +48,8 @@ const TagsPage = async({ searchParams } : SearchParamsProps) => {
                                 </div>
 
                                 <p className="small-medium text-dark400_light500 mt-2">
-                                    <span className="body-semibold primary-text-gradient mr-1">{tag.questions.length}+</span> Question(s)
+                                    <span
+                                        className="body-semibold primary-text-gradient mr-1">{tag.questions.length}+</span> Question(s)
                                 </p>
                             </article>
                         </Link>
@@ -58,6 +62,12 @@ const TagsPage = async({ searchParams } : SearchParamsProps) => {
                         linkTitle="Ask a Question"/>
                 )}
             </section>
+
+            <div className="mt-10">
+                <Pagination
+                    pageNumber={searchParams?.page ? +searchParams.page : 1}
+                    isNext={result.isNext!}/>
+            </div>
         </>
     )
 }
