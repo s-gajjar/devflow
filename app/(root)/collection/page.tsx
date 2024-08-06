@@ -7,6 +7,7 @@ import {SearchParamsProps} from "@/types";
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
 import {QuestionFilters} from "@/constants/filters";
+import Pagination from "@/components/shared/Pagination";
 
 export default async function Collection({searchParams} : SearchParamsProps) {
 
@@ -20,6 +21,7 @@ export default async function Collection({searchParams} : SearchParamsProps) {
         clerkId: userId,
         searchQuery: searchParams.q,
         filter: searchParams.filter,
+        page: searchParams.page ? +searchParams.page : 1,
     });
 
     if (!result.success) {
@@ -68,6 +70,12 @@ export default async function Collection({searchParams} : SearchParamsProps) {
                         linkTitle="Ask a Question"
                     />
                 )}
+            </div>
+
+            <div className="mt-10">
+                <Pagination
+                    pageNumber={searchParams?.page ? +searchParams.page : 1}
+                    isNext={result.isNext!}/>
             </div>
         </>
     );

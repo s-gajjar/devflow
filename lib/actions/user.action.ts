@@ -85,20 +85,21 @@ export async function getAllUsers(params: GetAllUsersParams) {
     try {
         connectToDatabase();
 
-        const {searchQuery, filter} = params;
+        const {searchQuery, filter, pageSize = 10, page = 1} = params;
 
         const query: FilterQuery<typeof User> = {};
+        const skipAmount = (page - 1) * pageSize;
 
-        if(searchQuery) {
+        if (searchQuery) {
             query.$or = [
-                {name: { $regex: new RegExp(searchQuery, "i")}},
-                {username: { $regex: new RegExp(searchQuery, "i")}},
+                {name: {$regex: new RegExp(searchQuery, "i")}},
+                {username: {$regex: new RegExp(searchQuery, "i")}},
             ]
         }
 
         let sortOptions: any = {};
 
-        switch(filter) {
+        switch (filter) {
             case "new_users":
                 sortOptions = {joinedAt: -1};
                 break;
@@ -112,15 +113,16 @@ export async function getAllUsers(params: GetAllUsersParams) {
                 break;
         }
 
-        // const {page = 1, pageSize = 20, filter, searchQuery} = params;
-
         const users = await User.find(query)
             .sort(sortOptions)
+            .skip(skipAmount)
+            .limit(pageSize)
             .lean();
 
-        console.log("Users fetched:", JSON.stringify(users, null, 2));
+        const totalUsers = await User.countDocuments(query);
+        const isNext = totalUsers > skipAmount + users.length;
 
-        return {users};
+        return {users, isNext};
     } catch (e) {
         console.error("Error in getAllUsers:", e);
         return {users: [], success: false};
@@ -166,11 +168,12 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     try {
         await connectToDatabase();
 
-        const {clerkId, page = 1, pageSize = 20, searchQuery, filter} = params;
+        const {clerkId, page = 1, pageSize = 5, searchQuery, filter} = params;
+
 
         let sortOptions: any = {};
 
-        switch(filter) {
+        switch (filter) {
             case "most_recent":
                 sortOptions = {createdAt: -1};
                 break;
@@ -201,15 +204,14 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             _id: {$in: user.saved.map((id: { toString: () => any; }) => id.toString())},
             ...(searchQuery ? {title: {$regex: new RegExp(searchQuery, 'i')}} : {})
         };
-
-
+        const skipAmount = (page - 1) * pageSize;
 
         const savedQuestions = await Question.find(query)
             .populate({path: 'tags', select: '_id name'})
             .populate({path: 'author', select: '_id clerkId name picture'})
             .sort(sortOptions)
+            .skip(skipAmount)
             .limit(pageSize)
-            .skip((page - 1) * pageSize)
             .lean(); // This returns plain JavaScript objects
 
         const formattedQuestions = savedQuestions.map(question => ({
@@ -232,7 +234,10 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         }));
 
 
-        return {questions: formattedQuestions, success: true};
+        const totalQuestions = await Question.countDocuments(query);
+        const isNext = totalQuestions > skipAmount + formattedQuestions.length;
+
+        return {questions: formattedQuestions, success: true, isNext};
     } catch (e) {
         console.error("Error in getSavedQuestions:", e);
         return {questions: [], success: false};
@@ -254,7 +259,7 @@ export async function getUserInfo(params: GetUserByIdParams) {
 
         const totalAnswers = await Answer.countDocuments({author: user._id});
 
-        return{
+        return {
             user,
             totalQuestions,
             totalAnswers
@@ -270,19 +275,24 @@ export async function getUserQuestions(params: GetUserStatsParams) {
     try {
         connectToDatabase();
 
-        const { userId } = params;
+        const {userId, page = 1, pageSize = 3} = params;
 
-        const totalQuestions = await Question.countDocuments({ author: userId });
+        const totalQuestions = await Question.countDocuments({author: userId});
+        const skipAmount = (page - 1) * pageSize;
 
-        const userQuestions = await Question.find({ author: userId })
-            .sort({ views: -1, updatedAt: -1 })
-            .populate({ path: 'tags', select: '_id name' })
-            .populate({ path: 'author', select: '_id clerkId name picture' });
+        const userQuestions = await Question.find({author: userId})
+            .sort({views: -1, updatedAt: -1})
+            .populate({path: 'tags', select: '_id name'})
+            .populate({path: 'author', select: '_id clerkId name picture'})
+            .skip(skipAmount)
+            .limit(pageSize);
 
+        const isNext = totalQuestions > skipAmount + userQuestions.length;
 
         return {
             totalQuestions,
-            questions: userQuestions
+            questions: userQuestions,
+            isNext
         };
 
     } catch (e) {
@@ -295,22 +305,26 @@ export async function getUsersAnswers(params: GetUserStatsParams) {
     try {
         connectToDatabase();
 
-        const { userId } = params;
-
+        const {userId, page = 1, pageSize = 3} = params;
         const totalAnswers = await Answer.countDocuments({author: userId});
+        const skipAmount = (page - 1) * pageSize;
 
-        const userAnswers = await Answer.find({ author: userId })
-            .sort({ updatedAt: -1 })
-            .populate({ path: 'question', select: '_id title' })
-            .populate({ path: 'author', select: '_id clerkId name picture' });
+        const userAnswers = await Answer.find({author: userId})
+            .sort({updatedAt: -1})
+            .populate({path: 'question', select: '_id title'})
+            .populate({path: 'author', select: '_id clerkId name picture'})
+            .skip(skipAmount)
+            .limit(pageSize);
 
+        const isNext = totalAnswers > skipAmount + userAnswers.length;
 
         return {
             totalAnswers,
-            answers: userAnswers
+            answers: userAnswers,
+            isNext
         }
 
-    }catch(e){
+    } catch (e) {
         console.log(e)
         throw e;
     }
