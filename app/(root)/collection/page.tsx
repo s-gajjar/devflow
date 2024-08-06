@@ -19,6 +19,7 @@ export default async function Collection({searchParams} : SearchParamsProps) {
     const result = await getSavedQuestions({
         clerkId: userId,
         searchQuery: searchParams.q,
+        filter: searchParams.filter,
     });
 
     if (!result.success) {
@@ -53,7 +54,7 @@ export default async function Collection({searchParams} : SearchParamsProps) {
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
-                            upvotes={question.upvotes.length}
+                            upvotes={question.upvotes}
                             views={question.views}
                             answers={Array.isArray(question.answers) ? question.answers : undefined}
                             createdAt={question.createdAt}

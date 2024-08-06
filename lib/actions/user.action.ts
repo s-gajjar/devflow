@@ -166,7 +166,29 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     try {
         await connectToDatabase();
 
-        const {clerkId, page = 1, pageSize = 20, searchQuery} = params;
+        const {clerkId, page = 1, pageSize = 20, searchQuery, filter} = params;
+
+        let sortOptions: any = {};
+
+        switch(filter) {
+            case "most_recent":
+                sortOptions = {createdAt: -1};
+                break;
+            case "oldest":
+                sortOptions = {createdAt: 1};
+                break;
+            case "most_viewed":
+                sortOptions = {views: -1};
+                break;
+            case "most_answered":
+                sortOptions = {answers: -1};
+                break;
+            case "most_voted":
+                sortOptions = {upvotes: -1};
+                break;
+            default:
+                break;
+        }
 
         // Find the user first
         const user = await User.findOne({clerkId}).select('saved');
@@ -180,10 +202,12 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
             ...(searchQuery ? {title: {$regex: new RegExp(searchQuery, 'i')}} : {})
         };
 
+
+
         const savedQuestions = await Question.find(query)
             .populate({path: 'tags', select: '_id name'})
             .populate({path: 'author', select: '_id clerkId name picture'})
-            .sort({createdAt: -1})
+            .sort(sortOptions)
             .limit(pageSize)
             .skip((page - 1) * pageSize)
             .lean(); // This returns plain JavaScript objects
