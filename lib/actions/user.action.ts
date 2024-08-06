@@ -85,7 +85,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
     try {
         connectToDatabase();
 
-        const {searchQuery} = params;
+        const {searchQuery, filter} = params;
 
         const query: FilterQuery<typeof User> = {};
 
@@ -96,10 +96,26 @@ export async function getAllUsers(params: GetAllUsersParams) {
             ]
         }
 
+        let sortOptions: any = {};
+
+        switch(filter) {
+            case "new_users":
+                sortOptions = {joinedAt: -1};
+                break;
+            case "old_users":
+                sortOptions = {joinedAt: 1};
+                break;
+            case "top_contributors":
+                sortOptions = {reputation: -1};
+                break;
+            default:
+                break;
+        }
+
         // const {page = 1, pageSize = 20, filter, searchQuery} = params;
 
         const users = await User.find(query)
-            .sort({createdAt: -1})
+            .sort(sortOptions)
             .lean();
 
         console.log("Users fetched:", JSON.stringify(users, null, 2));

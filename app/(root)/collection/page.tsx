@@ -39,11 +39,9 @@ export default async function Collection({searchParams} : SearchParamsProps) {
                     placeholder="Search for questions"
                     otherClasses="flex-1"
                 />
-
                 <Filters
                     filters={QuestionFilters}
-                    otherClasses="min-h-[56px]"
-                    containerClasses="hidden max-md:flex"/>
+                    otherClasses="min-h-[56px] sm:min-w-[170px]"/>
             </div>
 
             <div className="mt-10 flex w-full flex-col gap-6">

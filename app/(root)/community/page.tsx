@@ -6,10 +6,14 @@ import NoResult from "@/components/shared/NoResult";
 import UserCard from "@/components/shared/cards/UserCard";
 import {SearchParamsProps} from "@/types";
 
+export const dynamic = 'force-dynamic';
+
+
 const CommunityPage = async({ searchParams } : SearchParamsProps) => {
 
     const result = await getAllUsers({
         searchQuery: searchParams.q,
+        filter: searchParams.filter,
     });
 
     return (
@@ -28,7 +32,7 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
                     otherClasses="flex-1"/>
                 <Filters
                     filters={UserFilters}
-                    otherClasses="min-h-[56px]"
+                    otherClasses="min-h-[56px] sm:min-w-[170px]"
                     />
             </div>
             <section className="mt-12 flex flex-wrap gap-4">
