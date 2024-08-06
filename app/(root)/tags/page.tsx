@@ -1,6 +1,6 @@
 import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
-import {UserFilters} from "@/constants/filters";
+import {TagFilters} from "@/constants/filters";
 import NoResult from "@/components/shared/NoResult";
 import {getAllTags} from "@/lib/actions/tag.action";
 import Link from "next/link";
@@ -10,6 +10,7 @@ const TagsPage = async({ searchParams } : SearchParamsProps) => {
 
     const result = await getAllTags({
         searchQuery: searchParams.q,
+        filter: searchParams.filter,
     });
 
     return (
@@ -27,8 +28,8 @@ const TagsPage = async({ searchParams } : SearchParamsProps) => {
                     placeholder="Search by tag name... "
                     otherClasses="flex-1"/>
                 <Filters
-                    filters={UserFilters}
-                    otherClasses="min-h-[56px]"
+                    filters={TagFilters}
+                    otherClasses="min-h-[56px] sm:min-w-[120px]"
                 />
             </div>
             <section className="mt-12 flex flex-wrap gap-4">

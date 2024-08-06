@@ -19,6 +19,7 @@ export default async function Collection({searchParams} : SearchParamsProps) {
     const result = await getSavedQuestions({
         clerkId: userId,
         searchQuery: searchParams.q,
+        filter: searchParams.filter,
     });
 
     if (!result.success) {
@@ -39,11 +40,9 @@ export default async function Collection({searchParams} : SearchParamsProps) {
                     placeholder="Search for questions"
                     otherClasses="flex-1"
                 />
-
                 <Filters
                     filters={QuestionFilters}
-                    otherClasses="min-h-[56px]"
-                    containerClasses="hidden max-md:flex"/>
+                    otherClasses="min-h-[56px] sm:min-w-[170px]"/>
             </div>
 
             <div className="mt-10 flex w-full flex-col gap-6">
@@ -55,7 +54,7 @@ export default async function Collection({searchParams} : SearchParamsProps) {
                             tags={question.tags}
                             author={question.author}
                             title={question.title}
-                            upvotes={question.upvotes.length}
+                            upvotes={question.upvotes}
                             views={question.views}
                             answers={Array.isArray(question.answers) ? question.answers : undefined}
                             createdAt={question.createdAt}

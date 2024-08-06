@@ -11,7 +11,7 @@ import {
 } from "@/lib/actions/shared.types";
 import User from "@/database/user.model";
 import {revalidatePath} from "next/cache";
-import { Types, FilterQuery } from 'mongoose';
+import {Types, FilterQuery} from 'mongoose';
 import Answer from "@/database/answer.model";
 import Interaction from "@/database/interaction.model";
 
@@ -19,34 +19,68 @@ export async function getQuestions(params: GetQuestionsParams) {
     try {
         await connectToDatabase();
 
-        const {searchQuery} = params;
+        console.log("Received params in getQuestions:", params);
+        const {searchQuery, filter, page = 1, pageSize = 10} = params;
+        console.log("Filter in getQuestions:", filter);
 
+        const skipAmount = (page - 1) * pageSize;
         const query: FilterQuery<typeof Question> = {};
 
-        if(searchQuery) {
+        if (searchQuery) {
             query.$or = [
-                {title: { $regex: new RegExp(searchQuery, "i")}},
-                {explanation: { $regex: new RegExp(searchQuery, "i")}}
+                {title: {$regex: new RegExp(searchQuery, "i")}},
+                {explanation: {$regex: new RegExp(searchQuery, "i")}}
 
             ]
         }
 
+        let sortOptions: any = {};
+
+        if (filter) {
+            switch (filter) {
+                case "newest":
+                    sortOptions = {createdAt: -1};
+                    break;
+                case "frequent":
+                    sortOptions = {views: -1};
+                    break;
+                case "unanswered":
+                    query.answers = {$size: 0};
+                    sortOptions = {createdAt: -1};
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        console.log("Query before find:", JSON.stringify(query));
+        console.log("Sort options before find:", JSON.stringify(sortOptions));
+
         const questions = await Question.find(query)
             .populate({path: 'tags', model: Tag})
             .populate({path: 'author', model: User})
-            .sort({createdAt: -1})
-            .lean();
+            .skip(skipAmount)
+            .limit(pageSize)
+            .sort(sortOptions)
 
-        return {questions};
-    } catch (e) {
-        console.error("Error in getQuestions:", e);
-        return {questions: [], success: false};
+        console.log("Final query:", JSON.stringify(query));
+        console.log("Sort options:", sortOptions);
+        console.log("Number of questions returned:", questions.length);
+
+        const totalQuestions = await Question.countDocuments(query);
+
+        const isNext = totalQuestions > skipAmount + questions.length;
+
+        return {questions, isNext};
+    } catch (error) {
+        console.log(error)
+        throw error;
     }
 }
 
 export async function createQuestion(params: CreateQuestionParams) {
     try {
-        const { title, explanation, tags, author, path } = params;
+        const {title, explanation, tags, author, path} = params;
 
         let authorId;
         if (typeof author === 'string' && author.length === 24) {
@@ -81,10 +115,10 @@ export async function createQuestion(params: CreateQuestionParams) {
         })
 
         revalidatePath(path);
-        return { success: true, questionId: question._id };
+        return {success: true, questionId: question._id};
     } catch (error) {
         console.error('Error creating question:', error);
-        return { success: false, error };
+        return {success: false, error};
     }
 }
 
