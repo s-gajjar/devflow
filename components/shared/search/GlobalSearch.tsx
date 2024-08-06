@@ -7,9 +7,6 @@ import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {formUrlQuery, removeKeyFromQuery} from "@/lib/utils";
 import GlobalResult from "@/components/shared/search/GlobalResult";
 
-interface GlobalSearchProps {
-
-}
 
 const GlobalSearch = () => {
     const router = useRouter();
@@ -41,6 +38,25 @@ const GlobalSearch = () => {
             document.removeEventListener("click", handleOutsideClick)
         }
     }, [pathname])
+
+
+    useEffect(() => {
+        const handleOutsideClick = (event: any) => {
+            if(searchContainerRef.current &&
+                // @ts-ignore
+                !searchContainerRef.current.contains(event.target)
+            ) {
+                setIsOpen(false);
+                setSearch('')
+            }
+        }
+
+        document.addEventListener("click", handleOutsideClick);
+
+        return () => {
+            document.removeEventListener("click", handleOutsideClick)
+        }
+    }, []);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
