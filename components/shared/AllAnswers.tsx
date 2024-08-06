@@ -14,13 +14,15 @@ interface AllAnswersProps {
     userId: string;
     totalAnswers?: number;
     page?: number;
-    filter?: number;
+    filter?: string;
 }
 
 const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter}: AllAnswersProps) => {
 
     const result = await getAllAnswer({
         questionId,
+        page: page? +page : 1,
+        sortBy: filter,
     })
 
     return (

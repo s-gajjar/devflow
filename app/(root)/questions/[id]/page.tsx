@@ -13,7 +13,7 @@ import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
 import {ParamsProps} from "@/types";
 
-const QuestionPage = async ({ params }: ParamsProps) => {
+const QuestionPage = async ({ params, searchParams }: any) => {
     const result = await getQuestionById({ questionId: params.id });
 
     // Handle case where result is null or undefined
@@ -99,6 +99,8 @@ const QuestionPage = async ({ params }: ParamsProps) => {
                 questionId={result._id}
                 userId={mongoUser?._id?.toString()} // Ensure this is passed as string
                 totalAnswers={result.answers.length}
+                page={searchParams?.page}
+                filter={searchParams?.filter}
             />
 
             <div className="mt-10">
