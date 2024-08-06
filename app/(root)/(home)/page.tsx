@@ -9,10 +9,21 @@ import QuestionCard from "@/components/shared/cards/QuestionCard";
 import { getQuestions } from "@/lib/actions/question.action";
 import {SearchParamsProps} from "@/types";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home({searchParams} : SearchParamsProps) {
+    console.log("Search params in Home:", searchParams);
+
     const result = await getQuestions({
         searchQuery: searchParams.q,
+        filter: searchParams.filter,
+        page: searchParams.page ? Number(searchParams.page) : 1,
+        pageSize: 10
     });
+
+    console.log("Result from getQuestions:", result);
+
+
 
     return (
         <>
@@ -49,7 +60,7 @@ export default async function Home({searchParams} : SearchParamsProps) {
                                 tags={question.tags}
                                 author={question.author}
                                 title={question.title}
-                                upvotes={question.upvotes.length}
+                                upvotes={question.upvotes}
                                 views={question.views}
                                 answers={Array.isArray(question.answers) ? question.answers : []}
                                 createdAt={question.createdAt ? new Date(question.createdAt) : new Date()}
