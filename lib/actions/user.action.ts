@@ -160,6 +160,7 @@ export async function toggleSaveQuestion(params: ToggleSaveQuestionParams) {
         }
 
         revalidatePath(path);
+        return true;
     } catch (e) {
         console.log(e)
         throw e;

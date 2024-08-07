@@ -11,7 +11,9 @@ import {auth} from "@clerk/nextjs/server";
 import {getUserById} from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
-// import {ParamsProps} from "@/types";
+import {Button} from "@/components/ui/button";
+import {toast} from "sonner";
+
 
 const QuestionPage = async ({ params, searchParams }: any) => {
     const result = await getQuestionById({ questionId: params.id });
@@ -57,6 +59,7 @@ const QuestionPage = async ({ params, searchParams }: any) => {
                     {result.title}
                 </h2>
             </div>
+
             <div className="flex flex-wrap gap-4 mb-8 mt-5">
                 <Metric
                     imgUrl="/assets/icons/clock.svg"
