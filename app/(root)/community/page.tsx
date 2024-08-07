@@ -19,14 +19,6 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
         page: searchParams.page ? +searchParams.page : 1,
     });
 
-
-    const isLoading = true;
-
-    if (isLoading) {
-        return <Loading />;
-    }
-
-
     return (
         <>
             <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
