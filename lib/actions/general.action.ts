@@ -22,7 +22,7 @@ export async function globalSearch(params: SearchParams) {
             {model: Question, type: 'question', searchFields: 'title'},
             {model: User, type: 'user', searchFields: 'name'},
             {model: Tag, type: 'tag', searchFields: 'name'},
-            {model: Answer, type: 'answer', searchFields: 'explanation'}
+            {model: Answer, type: 'answer', searchFields: 'answer'}
         ]
 
         const typeLower = type?.toLowerCase();
