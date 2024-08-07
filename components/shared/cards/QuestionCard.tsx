@@ -1,7 +1,7 @@
 import Link from "next/link";
 import RenderTag from "../RenderTag";
 import Metric from "../Metric";
-import { formatLargeNumber, getTimeStamp } from "@/lib/utils";
+import {formatLargeNumber, getTimeStamp} from "@/lib/utils";
 import {SignedIn} from "@clerk/nextjs";
 import EditDeleteButton from "@/components/shared/EditDeleteButton";
 
@@ -28,10 +28,10 @@ const QuestionCard = ({
                           answers,
                           createdAt,
                       }: QuestionCardProps) => {
-    const showActionButton =  clerkId;
+    const showActionButton = clerkId;
 
     return (
-        <div className="card-wrapper mt-10 rounded-[10px] p-3 sm:px-12">
+        <div className="card-wrapper mt-10 rounded-[10px] p-3 sm:px-12 border border-opacity-75 border-slate-100 dark:border-none">
             <div className="flex flex-col-reverse items-start justify-between gap-5 sm:flex-row">
                 <div>
                     <Link href={`/questions/${_id}`} className="flex items-center gap-2">
@@ -52,7 +52,7 @@ const QuestionCard = ({
             </div>
             <div className="mt-3.5 flex flex-wrap gap-2">
                 {tags.map((tag) => (
-                    <RenderTag key={tag._id} _id={tag._id} name={tag.name} />
+                    <RenderTag key={tag._id} _id={tag._id} name={tag.name}/>
                 ))}
             </div>
             <div className="flex-between mt-5 w-full flex-wrap gap-3">
@@ -66,30 +66,32 @@ const QuestionCard = ({
                     isAuthor={true}
                     textStyles="small-medium text-dark400_light700"
                 />
-                <Metric
-                    imgUrl="/assets/icons/like.svg"
-                    alt="upvotes"
-                    value={formatLargeNumber(upvotes.length)}
-                    label="Votes"
-                    title=" Upvotes"
-                    textStyles="small-medium text-dark400_light800"
-                />
-                <Metric
-                    imgUrl="/assets/icons/message.svg"
-                    alt="message"
-                    value={formatLargeNumber(answers.length)}
-                    label="Messages"
-                    title=" Messages"
-                    textStyles="small-medium text-dark400_light800"
-                />
-                <Metric
-                    imgUrl="/assets/icons/eye.svg"
-                    alt="eye"
-                    value={formatLargeNumber(views)}
-                    label="Views"
-                    title=" Views"
-                    textStyles="small-medium text-dark400_light800"
-                />
+                <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
+                    <Metric
+                        imgUrl="/assets/icons/like.svg"
+                        alt="upvotes"
+                        value={formatLargeNumber(upvotes.length)}
+                        label="Votes"
+                        title=" Upvotes"
+                        textStyles="small-medium text-dark400_light800"
+                    />
+                    <Metric
+                        imgUrl="/assets/icons/message.svg"
+                        alt="message"
+                        value={formatLargeNumber(answers.length)}
+                        label="Messages"
+                        title=" Messages"
+                        textStyles="small-medium text-dark400_light800"
+                    />
+                    <Metric
+                        imgUrl="/assets/icons/eye.svg"
+                        alt="eye"
+                        value={formatLargeNumber(views)}
+                        label="Views"
+                        title=" Views"
+                        textStyles="small-medium text-dark400_light800"
+                    />
+                </div>
             </div>
         </div>
     );

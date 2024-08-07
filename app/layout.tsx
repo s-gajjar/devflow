@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: "DevFlow",
+    title: "DevOverflow",
     description: "A community for developers to share their knowledge and experiences.",
     icons: {
         icon: "/assets/images/site-logo.svg",
