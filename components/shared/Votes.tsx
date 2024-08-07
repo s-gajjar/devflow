@@ -8,6 +8,7 @@ import {downvoteAnswer, upvoteAnswer} from "@/lib/actions/answer.action";
 import {toggleSaveQuestion} from "@/lib/actions/user.action";
 import {useEffect} from "react";
 import {viewQuestion} from "@/lib/actions/interaction.action";
+import {toast} from "sonner";
 
 interface VotesProps {
     type: string;
@@ -34,15 +35,24 @@ const Votes = ({
     const router = useRouter();
 
     const handleSave = async () => {
-        await toggleSaveQuestion({
+        const result = await toggleSaveQuestion({
             userId,
             questionId: itemId,
             path
         })
+
+        if (result) {
+            toast.info("Bookmark Removed");
+        } else if (!result) {
+            toast.success("Bookmark Added");
+        }
     }
 
     const handleVote = async (action: string) => {
-        if (!userId) return;
+        if (!userId) {
+            return toast.error("You must be logged in to vote");
+        }
+        ;
 
         if (action === 'upvote') {
             if (type === 'Question') {
@@ -62,6 +72,13 @@ const Votes = ({
                     hasdownVoted
                 });
             }
+
+            if (hasupVoted) {
+                toast.info("Upvote Removed");
+            } else if (!hasupVoted) {
+                toast.success("Upvote Added");
+            }
+
         } else if (action === 'downvote') {
             if (type === 'Question') {
                 await downvoteQuestion({
@@ -80,6 +97,13 @@ const Votes = ({
                     hasdownVoted
                 });
             }
+
+
+            if (hasdownVoted) {
+                toast.info("Downvote Removed");
+            } else if (!hasdownVoted) {
+                toast.success("Downvote Added");
+            }
         }
         // Optionally refresh the page or state to reflect the updated votes
         router.refresh();
@@ -91,7 +115,7 @@ const Votes = ({
             questionId: itemId,
             userId: userId
         })
-    },[itemId, userId, path, router]);
+    }, [itemId, userId, path, router]);
 
     return (
         <div className="flex gap-5">

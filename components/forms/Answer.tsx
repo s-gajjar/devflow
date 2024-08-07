@@ -117,7 +117,7 @@ const Answer = ({question, questionId, authorId}: AnswerProps) => {
                             onClick={generateAIAnswer}>
                         {isSubmittingAI ? (
                             <>
-                                Generating..
+                                Generating
                             </>
                         ) : (
                             <>

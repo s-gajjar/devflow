@@ -6,25 +6,54 @@ import { HomePageFilters } from "@/constants/filters";
 import HomeFilters from "@/components/home/HomeFilters";
 import NoResult from "@/components/shared/NoResult";
 import QuestionCard from "@/components/shared/cards/QuestionCard";
-import { getQuestions } from "@/lib/actions/question.action";
+import {getQuestions, getRecommendedQuestions} from "@/lib/actions/question.action";
 import {SearchParamsProps} from "@/types";
 import Pagination from "@/components/shared/Pagination";
+import type {Metadata} from "next";
+import {auth} from "@clerk/nextjs/server";
+
+
+export const metadata: Metadata = {
+    title: "Home | DevOverflow",
+    description: "A community for developers to share their knowledge and experiences.",
+    icons: {
+        icon: "/assets/images/site-logo.svg",
+    }
+};
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home({searchParams} : SearchParamsProps) {
-    console.log("Search params in Home:", searchParams);
+    const { userId } = auth();
+    let result;
 
-    const result = await getQuestions({
-        searchQuery: searchParams.q,
-        filter: searchParams.filter,
-        page: searchParams.page ? +searchParams.page : 1,
-    });
+    if(searchParams?.filter === 'recommended'){
+        if(userId){
+            result = await getRecommendedQuestions({
+                userId,
+                page: searchParams.page ? +searchParams.page : 1,
+                searchQuery: searchParams.q,
+            });
+        }else{
+            result = {
+                questions: [],
+                isNext: false
+            }
+        }
+    }else{
+        result = await getQuestions({
+            searchQuery: searchParams.q,
+            filter: searchParams.filter,
+            page: searchParams.page ? +searchParams.page : 1,
+        });
+    }
+
+
 
     return (
         <>
-            <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
-                <h1 className="h1-bold text-dark100_light900">
+            <div className="flex w-full justify-between gap-4 sm:flex-row">
+                <h1 className="h1-bold text-dark100_light900 whitespace-nowrap">
                     All Questions
                 </h1>
 
@@ -32,6 +61,7 @@ export default async function Home({searchParams} : SearchParamsProps) {
                     <Button className="primary-gradient min-h-[46px] !text-light-900 px-4 py-3">Ask a Question</Button>
                 </Link>
             </div>
+
             <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
                 <LocalSearch
                     route="/"
@@ -46,7 +76,7 @@ export default async function Home({searchParams} : SearchParamsProps) {
             </div>
             <HomeFilters/>
 
-            <div className="mt-10 flex w-full flex-col gap-6">
+            <div className="mt-10 flex w-full flex-col gap-2">
                 {result.questions && result.questions.length > 0 ? (
                     result.questions.map((question) => (
                         question && question._id ? (

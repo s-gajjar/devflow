@@ -17,13 +17,11 @@ const ThemeSwitcher = () => {
 
     const {mode, setMode } = useTheme();
 
-
-
     return (
         <Menubar className="relative border-none font-inter bg-transparent shadow-none">
             <MenubarMenu>
                 <MenubarTrigger
-                    className="focus:bg-light-900 data-[state=open]:bg-light-900 dark:focus:bg-dark-200 dark:data-[state=open]:bg-dark-200">
+                    className="focus:bg-light-900 data-[state=open]:bg-light-900 dark:focus:bg-dark-200 dark:data-[state=open]:bg-dark-200 cursor-pointer">
                     {mode === 'light' ? (
                         <Image src="/assets/icons/sun.svg" className="active-theme" width={20} height={20}
                                alt="Sun Icon"/>
@@ -37,7 +35,7 @@ const ThemeSwitcher = () => {
                     {themes.map((item) => (
                         <MenubarItem
                             key={item.value}
-                            className="flex font-inter items-center gap-4 px-2.5 py-2 dark:focus:bg-dark-400"
+                            className="flex font-inter items-center gap-4 px-2.5 py-2 cursor-pointer focus:bg-light-800 dark:focus:bg-dark-400"
                             onClick={() => {
                                 setMode(item.value);
 
