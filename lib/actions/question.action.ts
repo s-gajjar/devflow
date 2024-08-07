@@ -105,6 +105,15 @@ export async function createQuestion(params: CreateQuestionParams) {
             $push: {tags: {$each: tagDocuments}}
         })
 
+        await Interaction.create({
+            user: authorId,
+            question: question._id,
+            action: "ask_question",
+            tags: tagDocuments
+        })
+
+        await User.findByIdAndUpdate(authorId, {$inc: {reputation: 5}});
+
         revalidatePath(path);
         return {success: true, questionId: question._id};
     } catch (error) {
@@ -156,6 +165,14 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
         if (!question) return null;
 
+        await User.findByIdAndUpdate(userId, {
+            $inc : { reputation: hasupVoted ? -2 : 2 }
+        })
+
+        await User.findByIdAndUpdate(question.author, {
+            $inc : { reputation: hasupVoted ? -10 : 10 }
+        })
+
         revalidatePath(path);
 
         // Convert to plain object
@@ -187,6 +204,14 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
         const question = await Question.findByIdAndUpdate(questionId, updateQuery, {new: true});
 
         if (!question) return null;
+
+        await User.findByIdAndUpdate(userId, {
+            $inc : { reputation: hasdownVoted ? -2 : 2 }
+        })
+
+        await User.findByIdAndUpdate(question.author, {
+            $inc : { reputation: hasdownVoted ? -10 : 10 }
+        })
 
         revalidatePath(path);
 

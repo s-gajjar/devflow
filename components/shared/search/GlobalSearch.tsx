@@ -41,24 +41,6 @@ const GlobalSearch = () => {
 
 
     useEffect(() => {
-        const handleOutsideClick = (event: any) => {
-            if(searchContainerRef.current &&
-                // @ts-ignore
-                !searchContainerRef.current.contains(event.target)
-            ) {
-                setIsOpen(false);
-                setSearch('')
-            }
-        }
-
-        document.addEventListener("click", handleOutsideClick);
-
-        return () => {
-            document.removeEventListener("click", handleOutsideClick)
-        }
-    }, []);
-
-    useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             if(search) {
                 const newUrl = formUrlQuery({
@@ -74,10 +56,8 @@ const GlobalSearch = () => {
                         params: searchParams.toString(),
                         keysToRemove: ['global', 'type']
                     })
-
                     router.push(newUrl, { scroll: false });
                 }
-
             }
         }, 300);
 

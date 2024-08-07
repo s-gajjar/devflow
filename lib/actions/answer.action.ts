@@ -13,6 +13,7 @@ import {revalidatePath} from "next/cache";
 
 import { startSession } from 'mongoose';
 import Interaction from "@/database/interaction.model";
+import User from "@/database/user.model";
 
 export async function createAnswer(params: CreateAnswerParams) {
     const session = await startSession();
@@ -42,6 +43,17 @@ export async function createAnswer(params: CreateAnswerParams) {
         console.log('Updated question:', updatedQuestion);
 
         await session.commitTransaction();
+
+        await Interaction.create({
+            user: author,
+            action: "answer",
+            question,
+            answer: newAnswer[0]._id,
+            tags: updatedQuestion.tags
+        })
+
+        await User.findByIdAndUpdate(author, { $inc: {reputation: 10}});
+
         revalidatePath(path);
 
         // Convert the Mongoose document to a plain JavaScript object
@@ -128,6 +140,9 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
 
         if (!answer) return null;
 
+        await User.findByIdAndUpdate(userId, { $inc: {reputation: hasupVoted ? -2 : 2 } });
+        await User.findByIdAndUpdate(answer.author, { $inc: {reputation: hasupVoted ? -10 : 10 } });
+
         revalidatePath(path);
 
         // Convert to plain object
@@ -159,6 +174,9 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
         const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
 
         if (!answer) return null;
+
+        await User.findByIdAndUpdate(userId, { $inc: {reputation: hasdownVoted ? -2 : 2 } });
+        await User.findByIdAndUpdate(answer.author, { $inc: {reputation: hasdownVoted ? 10 : -10 } });
 
         revalidatePath(path);
 

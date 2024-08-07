@@ -281,7 +281,7 @@ export async function getUserQuestions(params: GetUserStatsParams) {
         const skipAmount = (page - 1) * pageSize;
 
         const userQuestions = await Question.find({author: userId})
-            .sort({views: -1, updatedAt: -1})
+            .sort({createdAt: -1, views: -1, upvotes: -1})
             .populate({path: 'tags', select: '_id name'})
             .populate({path: 'author', select: '_id clerkId name picture'})
             .skip(skipAmount)
