@@ -1,6 +1,8 @@
 import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
 import qs from "query-string";
+import {BADGE_CRITERIA} from "@/constants";
+import {BadgeCounts} from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -50,24 +52,26 @@ export const formatLargeNumber = (num: number | undefined): string => {
 }
 
 export function formatJoinDate(date: Date | string): string {
-    // Convert string to Date if necessary
+    console.log("Received date input:", date); // Log the input for debugging
+
     if (typeof date === 'string') {
+        // Attempt to parse the date using the Date constructor
         date = new Date(date);
+        console.log("Parsed date string to Date object:", date); // Log the parsed Date object
     }
 
-    // Check if the input is a valid Date object
+    // Check if the date is a valid Date object
     if (!(date instanceof Date) || isNaN(date.getTime())) {
-        throw new Error("Invalid Date object");
+        console.error('Invalid Date object:', date); // Enhanced error logging
+        return 'Invalid date'; // Return a user-friendly message instead of throwing an error
     }
 
-    // Define options for formatting
     const options: Intl.DateTimeFormatOptions = {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
     };
 
-    // Format the date using the options
     return date.toLocaleDateString('en-US', options);
 }
 
@@ -116,4 +120,35 @@ export const removeKeyFromQuery = ({
         },
         {skipNull: true}
     )
+}
+
+
+interface BadgeParam {
+    criteria: {
+        type: keyof typeof BADGE_CRITERIA;
+        count: number;
+    }[]
+}
+
+export const assignBadges = (params: BadgeParam) => {
+    const badgeCounts: BadgeCounts = {
+        GOLD: 0,
+        SILVER: 0,
+        BRONZE: 0,
+    }
+
+    const { criteria } = params;
+
+    criteria.forEach((item) => {
+        const { type, count } = item;
+        const badgeLevels: any = BADGE_CRITERIA[type];
+
+        Object.keys(badgeLevels).forEach((level: any) => {
+            if(count >= badgeLevels[level]) {
+                badgeCounts[level as keyof BadgeCounts] +=1 ;
+            }
+        })
+    })
+
+    return badgeCounts;
 }

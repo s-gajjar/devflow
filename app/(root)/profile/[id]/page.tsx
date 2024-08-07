@@ -16,6 +16,9 @@ const Page = async ({params, searchParams}: URLProps) => {
 
     const userInfo = await getUserInfo({userId: params.id});
     const {userId: clerkId} = auth()
+
+    console.log('User info in Page component:', userInfo);
+
     return (
         <>
             <div className="flex flex-col-reverse items-start justify-between sm:flex-row">
@@ -41,14 +44,14 @@ const Page = async ({params, searchParams}: URLProps) => {
                                 imgUrl="/assets/icons/calendar.svg"
                                 title={formatJoinDate(userInfo.user?.joinedAt.toString())}/>
                         </div>
-                        {userInfo.user.bio && (
+                        {userInfo.user?.bio && (
                             <p className="mt-9 body-regular text-dark400_light8 mt-800">{userInfo.user?.bio}</p>
                         )}
                     </div>
                 </div>
                 <div className="flex justify-end max-sm:mb-5 max-sm:w-full sm:mt-3">
                     <SignedIn>
-                        {clerkId === userInfo.user.clerkId && (
+                        {clerkId === userInfo.user?.clerkId && (
                             <Link href="/profile/edit" className="flex items-center gap-2">
                                 <Button
                                     className="paragraph-medium btn-secondary text-dark300_light900 min-h-[46px] min-w-[175px] px-4 py-3">
@@ -60,8 +63,11 @@ const Page = async ({params, searchParams}: URLProps) => {
                 </div>
             </div>
             <Stats
-                totalQuestions={userInfo.totalQuestions!}
-                totalAnswers={userInfo.totalAnswers!}/>
+                reputation={userInfo.user?.reputation ?? 0}
+                totalQuestions={userInfo.totalQuestions ?? 0}
+                totalAnswers={userInfo.totalAnswers ?? 0}
+                badges={userInfo.badgeCount ?? { GOLD: 0, SILVER: 0, BRONZE: 0 }}
+            />
 
             <div className="mt-10 flex w-full flex-col gap-10">
                 <Tabs defaultValue="account" className="w-full">
@@ -72,14 +78,14 @@ const Page = async ({params, searchParams}: URLProps) => {
                     <TabsContent value="top-posts" className="">
                         <QuestionTab
                             searchParams={searchParams}
-                            userId={userInfo.user._id}
-                            clerkId={userInfo.user.clerkId}/>
+                            userId={userInfo.user?._id}
+                            clerkId={userInfo.user?.clerkId}/>
                     </TabsContent>
                     <TabsContent value="answers" className="">
                         <AnswersTab
                             searchParams={searchParams}
-                            userId={userInfo.user._id}
-                            clerkId={userInfo.user.clerkId}/>
+                            userId={userInfo.user?._id}
+                            clerkId={userInfo.user?.clerkId}/>
                     </TabsContent>
                 </Tabs>
 

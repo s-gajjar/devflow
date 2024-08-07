@@ -13,6 +13,8 @@ import {revalidatePath} from "next/cache";
 import Question from "@/database/question.model";
 import User from "@/database/user.model";
 import Answer from "@/database/answer.model";
+import {BadgeCriteriaType} from "@/types";
+import {assignBadges} from "@/lib/utils";
 
 export async function getUserById(params: any) {
     try {
@@ -256,13 +258,46 @@ export async function getUserInfo(params: GetUserByIdParams) {
         }
 
         const totalQuestions = await Question.countDocuments({author: user._id});
-
         const totalAnswers = await Answer.countDocuments({author: user._id});
 
+        const [questionUpvotes] = await Question.aggregate([
+            {$match: {author: user._id}},
+            {$project: { _id: 0, upvotes: {$size: "$upvotes"}}},
+            {$group: {_id: null, totalUpvotes: {$sum: "$upvotes"}}}
+        ]);
+
+        const [answerUpvotes] = await Answer.aggregate([
+            {$match: {author: user._id}},
+            {$project: { _id: 0, upvotes: {$size: "$upvotes"}}},
+            {$group: {_id: null, totalUpvotes: {$sum: "$upvotes"}}}
+        ]);
+
+        const [questionViews] = await Answer.aggregate([
+            {$match: {author: user._id}},
+            {$group: {_id: null, totalViews: {$sum: "$views"}}}
+        ]);
+
+        const criteria = [
+            { type: 'QUESTION_COUNT' as BadgeCriteriaType, count: totalQuestions },
+            { type: 'ANSWER_COUNT' as BadgeCriteriaType, count: totalAnswers },
+            { type: 'QUESTION_UPVOTE_COUNT' as BadgeCriteriaType, count: questionUpvotes.totalUpvotes || 0 },
+            { type: 'ANSWER_UPVOTE_COUNT' as BadgeCriteriaType, count: answerUpvotes.totalUpvotes || 0 },
+            { type: 'TOTAL_VIEWS' as BadgeCriteriaType, count: questionViews.totalViews || 0 },
+        ]
+        console.log('Criteria before assignBadges:', criteria);
+        let badgeCount;
+        try {
+            badgeCount = assignBadges({criteria});
+            console.log('Badge count:', badgeCount);
+        } catch (error) {
+            console.error('Error in assignBadges:', error);
+            badgeCount = { GOLD: 0, SILVER: 0, BRONZE: 0 };
+        }
         return {
             user,
             totalQuestions,
-            totalAnswers
+            totalAnswers,
+            badgeCount,
         }
 
     } catch (e) {
