@@ -23,10 +23,12 @@ const GlobalResult = () => {
 
             try {
                 const res = await globalSearch({ query: global, type: type });
+                console.log("----------------")
+                console.log("res", res);
                 setResult(JSON.parse(res));
             } catch (e) {
-                console.log(e);
-                setResult([]);  // Ensure result is empty on error
+                console.log("error", e);
+                setResult([]);
             } finally {
                 setIsLoading(false);
             }
