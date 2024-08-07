@@ -8,7 +8,6 @@ import LocalSearch from "@/components/shared/search/LocalSearch";
 import Filters from "@/components/shared/Filters";
 import {QuestionFilters} from "@/constants/filters";
 import Pagination from "@/components/shared/Pagination";
-import Loading from "@/app/(root)/community/loading";
 
 export default async function Collection({searchParams} : SearchParamsProps) {
 

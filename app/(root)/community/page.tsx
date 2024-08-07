@@ -6,7 +6,6 @@ import NoResult from "@/components/shared/NoResult";
 import UserCard from "@/components/shared/cards/UserCard";
 import {SearchParamsProps} from "@/types";
 import Pagination from "@/components/shared/Pagination";
-import Loading from "@/app/(root)/community/loading";
 
 export const dynamic = 'force-dynamic';
 

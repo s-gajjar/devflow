@@ -11,9 +11,6 @@ import {auth} from "@clerk/nextjs/server";
 import {getUserById} from "@/lib/actions/user.action";
 import AllAnswers from "@/components/shared/AllAnswers";
 import Votes from "@/components/shared/Votes";
-import {Button} from "@/components/ui/button";
-import {toast} from "sonner";
-
 
 const QuestionPage = async ({ params, searchParams }: any) => {
     const result = await getQuestionById({ questionId: params.id });
