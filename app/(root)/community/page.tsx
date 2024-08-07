@@ -6,6 +6,7 @@ import NoResult from "@/components/shared/NoResult";
 import UserCard from "@/components/shared/cards/UserCard";
 import {SearchParamsProps} from "@/types";
 import Pagination from "@/components/shared/Pagination";
+import Loading from "@/app/(root)/community/loading";
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,14 @@ const CommunityPage = async({ searchParams } : SearchParamsProps) => {
         filter: searchParams.filter,
         page: searchParams.page ? +searchParams.page : 1,
     });
+
+
+    const isLoading = true;
+
+    if (isLoading) {
+        return <Loading />;
+    }
+
 
     return (
         <>
