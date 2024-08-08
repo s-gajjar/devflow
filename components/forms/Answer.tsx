@@ -9,7 +9,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Editor} from "@tinymce/tinymce-react";
 import {useTheme} from "@/context/ThemeProvider";
 import {Button} from "@/components/ui/button";
-import Image from "next/image";
 import {createAnswer} from "@/lib/actions/answer.action";
 import {usePathname} from "next/navigation";
 
@@ -20,11 +19,10 @@ interface AnswerProps {
 }
 
 
-const Answer = ({question, questionId, authorId}: AnswerProps) => {
+const Answer = ({questionId, authorId}: AnswerProps) => {
 
     const {mode} = useTheme();
     const [isSubmitting, setisSubmitting] = useState(false);
-    const [isSubmittingAI, setIsSubmittingAI] = useState(false)
     const editorRef = useRef(null);
     const pathname = usePathname();
     const form = useForm<z.infer<typeof AnswerSchema>>({
@@ -62,72 +60,55 @@ const Answer = ({question, questionId, authorId}: AnswerProps) => {
         }
     }
 
+    /*
+        const generateAIAnswer = async () => {
+            if (!authorId) return;
 
-    const generateAIAnswer = async () => {
-        if (!authorId) return;
+            setIsSubmittingAI(true);
 
-        setIsSubmittingAI(true);
+            try {
+                const response = await fetch(`/api/claude`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                    }),
+                });
 
-        try {
-            const response = await fetch(`/api/claude`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: question,
-                }),
-            });
+                console.log('Response status:', response.status);
 
-            console.log('Response status:', response.status);
+                const aiAnswer = await response.json();
 
-            const aiAnswer = await response.json();
+                const formatteAnswer = aiAnswer.reply.replace(/\n/g, '<br/>');
 
-            const formatteAnswer = aiAnswer.reply.replace(/\n/g, '<br/>');
+                if (editorRef.current) {
+                    const editor = editorRef.current as any;
+                    editor.setContent(formatteAnswer);
+                }
 
-            if (editorRef.current) {
-                const editor = editorRef.current as any;
-                editor.setContent(formatteAnswer);
+                console.log('AI Answer:', aiAnswer);
+
+                if (aiAnswer.success) {
+                    alert(aiAnswer.reply || 'No reply received');
+                } else {
+                    alert('Error: ' + (aiAnswer.error || 'Unknown error occurred'));
+                }
+            } catch (e) {
+                console.error("Error in generateAIAnswer:", e);
+                alert('An error occurred while generating the AI answer');
+            } finally {
+                setIsSubmittingAI(false);
             }
-
-            console.log('AI Answer:', aiAnswer);
-
-            if (aiAnswer.success) {
-                alert(aiAnswer.reply || 'No reply received');
-            } else {
-                alert('Error: ' + (aiAnswer.error || 'Unknown error occurred'));
-            }
-        } catch (e) {
-            console.error("Error in generateAIAnswer:", e);
-            alert('An error occurred while generating the AI answer');
-        } finally {
-            setIsSubmittingAI(false);
         }
-    }
 
-
+    */
     return (
         <>
             <div>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-centersm:gap-2">
                     <h4 className="paragraph-semibold text-dark400_light800">Write your answer here</h4>
-                    {/*<Button type="submit"*/}
-                    {/*        disabled={isSubmitting}*/}
-                    {/*        className="btn light-border-2 gap1.5 rounded-md px-4 w-fit py-2.5 text-primary-500 shadow-none"*/}
-                    {/*        onClick={generateAIAnswer}>*/}
-                    {/*    {isSubmittingAI ? (*/}
-                    {/*        <>*/}
-                    {/*            Generating*/}
-                    {/*        </>*/}
-                    {/*    ) : (*/}
-                    {/*        <>*/}
-                    {/*            <Image src="/assets/icons/stars.svg" width={12} height={12}*/}
-                    {/*                   className="object-contain mr-2"*/}
-                    {/*                   alt="Star Icon"/>*/}
-                    {/*            Generate AI Answer*/}
-                    {/*        </>*/}
-                    {/*    )}*/}
-                    {/*</Button>*/}
                 </div>
                 <Form {...form}>
                     <form
