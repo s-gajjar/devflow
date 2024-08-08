@@ -111,24 +111,23 @@ const Answer = ({question, questionId, authorId}: AnswerProps) => {
             <div>
                 <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-centersm:gap-2">
                     <h4 className="paragraph-semibold text-dark400_light800">Write your answer here</h4>
-                    <Button type="submit"
-                            disabled={isSubmitting}
-                            className="btn light-border-2 gap1.5 rounded-md px-4 w-fit py-2.5 text-primary-500 shadow-none"
-                            onClick={generateAIAnswer}>
-                        {isSubmittingAI ? (
-                            <>
-                                Generating
-                            </>
-                        ) : (
-                            <>
-                                <Image src="/assets/icons/stars.svg" width={12} height={12}
-                                       className="object-contain mr-2"
-                                       alt="Star Icon"/>
-                                Generate AI Answer
-                            </>
-                        )}
-                    </Button>
-
+                    {/*<Button type="submit"*/}
+                    {/*        disabled={isSubmitting}*/}
+                    {/*        className="btn light-border-2 gap1.5 rounded-md px-4 w-fit py-2.5 text-primary-500 shadow-none"*/}
+                    {/*        onClick={generateAIAnswer}>*/}
+                    {/*    {isSubmittingAI ? (*/}
+                    {/*        <>*/}
+                    {/*            Generating*/}
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <>*/}
+                    {/*            <Image src="/assets/icons/stars.svg" width={12} height={12}*/}
+                    {/*                   className="object-contain mr-2"*/}
+                    {/*                   alt="Star Icon"/>*/}
+                    {/*            Generate AI Answer*/}
+                    {/*        </>*/}
+                    {/*    )}*/}
+                    {/*</Button>*/}
                 </div>
                 <Form {...form}>
                     <form
